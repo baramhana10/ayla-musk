@@ -1,0 +1,482 @@
+@import "tailwindcss";
+
+:root {
+  --color-ivory: #fdf9f6;
+  --color-ivory-deep: #f8f1ec;
+  --color-blush: #f6e4e2;
+  --color-blush-soft: #fbeae5;
+  --color-pink-soft: #f0d3d4;
+  --color-rose: #e3aeb4;
+  --color-rose-deep: #d497a0;
+  --color-dusty: #c98f95;
+  --color-mauve: #b3707c;
+  --color-deep-rose: #9c5a63;
+  --color-wine: #723c46;
+  --color-charcoal: #2b211f;
+  --color-charcoal-soft: #423531;
+  --color-champagne: #c9a24b;
+  --color-champagne-light: #e4c98a;
+  --color-gold-mist: #ede1c8;
+  --color-noir: #17110f;
+  --color-noir-soft: #221917;
+  --color-onyx: #0c0908;
+  --color-plum: #2e1a1f;
+}
+
+/* Arabic is the default locale, so its type pairing (Amiri for display,
+   Tajawal for body) is what most visitors see. English overrides back to
+   the Latin pairing. Both live behind the same --font-display/--font-body
+   tokens, so no component ever branches on language for typography. */
+html:not([lang="en"]) {
+  --font-display: var(--font-amiri);
+  --font-body: var(--font-tajawal);
+}
+html[lang="en"] {
+  --font-display: var(--font-playfair);
+  --font-body: var(--font-manrope);
+}
+
+@theme inline {
+  --font-display: var(--font-playfair);
+  --font-body: var(--font-manrope);
+
+  --color-ivory: var(--color-ivory);
+  --color-ivory-deep: var(--color-ivory-deep);
+  --color-blush: var(--color-blush);
+  --color-blush-soft: var(--color-blush-soft);
+  --color-pink-soft: var(--color-pink-soft);
+  --color-rose: var(--color-rose);
+  --color-rose-deep: var(--color-rose-deep);
+  --color-dusty: var(--color-dusty);
+  --color-mauve: var(--color-mauve);
+  --color-deep-rose: var(--color-deep-rose);
+  --color-wine: var(--color-wine);
+  --color-charcoal: var(--color-charcoal);
+  --color-charcoal-soft: var(--color-charcoal-soft);
+  --color-champagne: var(--color-champagne);
+  --color-champagne-light: var(--color-champagne-light);
+  --color-gold-mist: var(--color-gold-mist);
+  --color-noir: var(--color-noir);
+  --color-noir-soft: var(--color-noir-soft);
+  --color-onyx: var(--color-onyx);
+  --color-plum: var(--color-plum);
+
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-float-slow: float 9s ease-in-out infinite;
+  --animate-petal-fall: petal-fall linear infinite;
+  --animate-shimmer: shimmer 2.4s ease-in-out infinite;
+  --animate-glow-pulse: glow-pulse 4s ease-in-out infinite;
+  --animate-marquee: marquee 32s linear infinite;
+  --animate-aurora: aurora 18s ease-in-out infinite;
+  --animate-aurora-slow: aurora 26s ease-in-out infinite reverse;
+  --animate-breathe: breathe 7s ease-in-out infinite;
+  --animate-sheen: sheen 6s ease-in-out infinite;
+
+  --ease-luxe: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-1deg);
+  }
+  50% {
+    transform: translateY(-18px) rotate(1deg);
+  }
+}
+
+@keyframes petal-fall {
+  0% {
+    transform: translateY(-10%) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(110vh) translateX(var(--drift, 40px)) rotate(320deg);
+    opacity: 0;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes glow-pulse {
+  0%,
+  100% {
+    opacity: 0.5;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+* {
+  scrollbar-color: var(--color-dusty) transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-ivory);
+  color: var(--color-charcoal);
+  font-family: var(--font-body), Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.font-display {
+  font-family: var(--font-display), "Times New Roman", serif;
+}
+
+.text-shimmer {
+  background: linear-gradient(
+    100deg,
+    var(--color-deep-rose) 30%,
+    var(--color-champagne) 45%,
+    var(--color-deep-rose) 60%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 3.5s linear infinite;
+}
+
+/* Price type: a bold, static rose-to-wine gradient — deliberately not
+   animated like .text-shimmer, since a price is read on every visit rather
+   than seen once, and a moving gradient would fight legibility right where
+   it matters most. */
+.text-price {
+  background: linear-gradient(115deg, var(--color-wine) 0%, var(--color-deep-rose) 55%, var(--color-mauve) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.container-luxe {
+  width: 100%;
+  max-width: 90rem;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .container-luxe {
+    padding-inline: 2rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-luxe {
+    padding-inline: 3rem;
+  }
+}
+
+
+/* ---------------------------------------------------------------------------
+   Couture layer — the noir/gold vocabulary the homepage is built from.
+   Everything here is deliberately low-level (a grain, a rule, a sheen) so the
+   components stay readable and the "expensive" feel comes from consistency
+   rather than one-off decoration.
+--------------------------------------------------------------------------- */
+
+@keyframes aurora {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 0.55;
+  }
+  33% {
+    transform: translate3d(4%, -6%, 0) scale(1.12);
+    opacity: 0.8;
+  }
+  66% {
+    transform: translate3d(-5%, 4%, 0) scale(0.95);
+    opacity: 0.6;
+  }
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-14px) scale(1.015);
+  }
+}
+
+@keyframes sheen {
+  0%,
+  55%,
+  100% {
+    transform: translateX(-140%) skewX(-18deg);
+  }
+  75% {
+    transform: translateX(240%) skewX(-18deg);
+  }
+}
+
+@keyframes rule-draw {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Gold foil lettering. Used sparingly — one phrase per screen at most. */
+.text-gold {
+  background: linear-gradient(
+    104deg,
+    #a8802f 0%,
+    #e4c98a 24%,
+    #fff4d8 38%,
+    #d9b463 52%,
+    #a8802f 74%,
+    #e4c98a 100%
+  );
+  background-size: 220% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 7s linear infinite;
+}
+
+/* Film grain. Sits above flat gradients so large dark fields read as
+   photographed paper instead of flat CSS. */
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.34;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.32'/%3E%3C/svg%3E");
+}
+
+.grain-light::after {
+  opacity: 0.28;
+  mix-blend-mode: multiply;
+}
+
+/* Hairline rule with a lit centre — the house's divider. */
+.rule-gold {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--color-champagne) 18%,
+    var(--color-champagne-light) 50%,
+    var(--color-champagne) 82%,
+    transparent
+  );
+}
+
+.shadow-luxe {
+  box-shadow:
+    0 1px 1px rgba(23, 17, 15, 0.04),
+    0 8px 24px -12px rgba(23, 17, 15, 0.16),
+    0 32px 64px -32px rgba(23, 17, 15, 0.24);
+}
+
+.shadow-plinth {
+  box-shadow:
+    0 40px 80px -40px rgba(0, 0, 0, 0.75),
+    0 0 0 1px rgba(228, 201, 138, 0.12);
+}
+
+/* Vertical set type for editorial margins. */
+.vertical-rl {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+/* Feathered edges for full-bleed marquees and rails. */
+.mask-x-fade {
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+}
+
+/* Link underline that draws in from the left rather than snapping on. */
+.link-draw {
+  position: relative;
+}
+.link-draw::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  height: 1px;
+  width: 100%;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.link-draw:hover::after {
+  transform: scaleX(1);
+}
+/* Under RTL the reading-start edge is the right, so the underline should
+   draw from there instead — keeps the gesture pointed the way the eye
+   actually moves rather than always animating from the physical left. */
+html[dir="rtl"] .link-draw::after {
+  left: auto;
+  right: 0;
+  transform-origin: right;
+}
+
+::selection {
+  background: var(--color-champagne);
+  color: var(--color-noir);
+}
+
+/* ---------------------------------------------------------------------------
+   Homepage-only warm couture layer — white + warm brown. Scoped entirely to
+   `.home-warm` (wraps the homepage route) so the rest of the site — shop, PDP,
+   cart, checkout, admin — keeps the noir/gold identity untouched. Everything
+   below is additive: new tokens and a few low-level utilities in the same
+   vocabulary as the noir layer (a grain, a rule, a sheen), so the homepage
+   reads as its own considered mood rather than a reskin.
+--------------------------------------------------------------------------- */
+.home-warm {
+  --hw-cream: #fbf6ef;
+  --hw-white: #fffdfa;
+  --hw-sand: #f3e9db;
+  --hw-sand-deep: #ecdcc6;
+  --hw-line: #e5d6c0;
+  --hw-tan: #c9a377;
+  --hw-tan-light: #ddbf98;
+  --hw-brown-light: #a9835f;
+  --hw-brown: #8a6244;
+  --hw-brown-deep: #5c4030;
+  --hw-espresso: #3a2a1e;
+  --hw-espresso-deep: #2a1d15;
+  --hw-ink: #2a1d15;
+
+  background: var(--hw-cream);
+}
+
+/* Warm gold-foil equivalent — bronze rather than yellow, so it reads as
+   "warm metal" against cream instead of nightclub gold against noir. */
+.text-bronze {
+  background: linear-gradient(
+    104deg,
+    #7d5a3c 0%,
+    #c9a377 24%,
+    #ecdcc0 38%,
+    #b9905f 52%,
+    #7d5a3c 74%,
+    #c9a377 100%
+  );
+  background-size: 220% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 7s linear infinite;
+}
+
+.rule-bronze {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--hw-tan) 18%,
+    var(--hw-tan-light) 50%,
+    var(--hw-tan) 82%,
+    transparent
+  );
+}
+
+.grain-warm::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='0.32'/%3E%3C/svg%3E");
+}
+
+.shadow-warm {
+  box-shadow:
+    0 1px 1px rgba(58, 42, 30, 0.04),
+    0 12px 28px -14px rgba(58, 42, 30, 0.16),
+    0 36px 64px -32px rgba(58, 42, 30, 0.18);
+}
+
+.shadow-warm-plinth {
+  box-shadow:
+    0 40px 70px -36px rgba(58, 42, 30, 0.32),
+    0 0 0 1px rgba(201, 163, 119, 0.16);
+}
+
+/* ---------------------------------------------------------------------------
+   Pre-hydration intro veil.
+   The React intro can only mount after hydration, which would mean a visible
+   flash of the hero first. This static veil is server-rendered and switched on
+   by a synchronous inline script (see IntroVeil.tsx) before the browser paints,
+   so the first frame the visitor ever sees is already the curtain. React lifts
+   `intro-armed` once its own overlay has painted on top.
+--------------------------------------------------------------------------- */
+
+#ayla-veil {
+  display: none;
+}
+
+html.intro-armed #ayla-veil {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background:
+    radial-gradient(120% 80% at 50% 42%, #f3e9db 0%, #fbf6ef 55%, #fffdfa 100%);
+}
+
+html.intro-armed body,
+html.intro-lock body {
+  overflow: hidden;
+}

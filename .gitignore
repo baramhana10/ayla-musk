@@ -1,0 +1,27 @@
+# Dependencies / build output (frontend and backend each have their own
+# more specific .gitignore too — this is a root-level backstop)
+node_modules/
+.next/
+dist/
+*.tsbuildinfo
+
+# Env files / secrets
+.env
+.env.local
+.env.*.local
+
+# Local databases
+*.db
+*.db-journal
+
+# Claude Code session-local files — not part of the project
+.claude/
+
+# Local scratch / leftover artifacts
+_to_delete/
+photo/
+ayla-noir-preview.html
+
+# OS
+.DS_Store
+Thumbs.db

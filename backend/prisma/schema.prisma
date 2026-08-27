@@ -1,0 +1,204 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id            String         @id @default(cuid())
+  email         String         @unique
+  passwordHash  String
+  name          String
+  role          String         @default("CUSTOMER") // CUSTOMER | ADMIN
+  createdAt     DateTime       @default(now())
+  addresses     Address[]
+  cartItems     CartItem[]
+  wishlistItems WishlistItem[]
+  orders        Order[]
+  reviews       Review[]
+}
+
+model Address {
+  id        String  @id @default(cuid())
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fullName  String
+  phone     String
+  address1  String
+  address2  String?
+  city      String
+  state     String
+  zip       String
+  country   String
+  isDefault Boolean @default(false)
+}
+
+model Category {
+  slug        String    @id
+  name        String
+  description String
+  image       String
+  products    Product[]
+}
+
+model Product {
+  id               String    @id @default(cuid())
+  slug             String    @unique
+  name             String
+  brandLine        String?
+  // Top-level department — the 3 shopfronts (Body Care / Perfumes / Contact
+  // Lenses) that drive which of the fields below are populated and which
+  // form the admin renders. categorySlug is now a department-scoped
+  // sub-category and is meaningless (null) for lenses, which has no
+  // sub-category taxonomy of its own — only its own attribute fields.
+  department       String    @default("perfumes") // body-care | perfumes | lenses
+  categorySlug     String?
+  category         Category? @relation(fields: [categorySlug], references: [slug])
+  accent           String
+  shortDescription String
+  description      String
+
+  // Perfumes only
+  scentFamily String?
+  gender      String? // Women | Men | Unisex
+  notesTop    String? @default("[]")
+  notesHeart  String? @default("[]")
+  notesBase   String? @default("[]")
+
+  // Body Care only
+  benefits     String? @default("[]")
+  ingredients  String? @default("[]")
+  howToUse     String?
+  skinHairType String?
+
+  // Contact Lenses only
+  lensType              String?
+  lensColor             String?
+  diameter              String?
+  baseCurve             String?
+  replacementDuration   String?
+  material              String?
+  waterContent          String?
+  prescriptionAvailable Boolean @default(false)
+
+  imagesJson  String   @default("[]")
+  rating      Float    @default(4.5)
+  reviewCount Int      @default(0)
+  featured    Boolean  @default(false)
+  bestseller  Boolean  @default(false)
+  isNew       Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  variants      ProductVariant[]
+  reviews       Review[]
+  cartItems     CartItem[]
+  wishlistItems WishlistItem[]
+  orderItems    OrderItem[]
+}
+
+model ProductVariant {
+  id             String  @id @default(cuid())
+  productId      String
+  product        Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  // Free-form variant label (e.g. "Power -2.00", "90-Pack") used in place of
+  // sizeMl when a size in millilitres doesn't describe the variant — lens
+  // power/quantity variants, for instance.
+  label          String?
+  sizeMl         Int?
+  price          Int
+  compareAtPrice Int?
+  stock          Int     @default(0)
+
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  author    String
+  rating    Int
+  title     String
+  body      String
+  verified  Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model CartItem {
+  id        String         @id @default(cuid())
+  userId    String
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product        @relation(fields: [productId], references: [id])
+  variantId String
+  variant   ProductVariant @relation(fields: [variantId], references: [id])
+  quantity  Int            @default(1)
+  createdAt DateTime       @default(now())
+
+  @@unique([userId, variantId])
+}
+
+model WishlistItem {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+}
+
+model Order {
+  id         String   @id @default(cuid())
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id])
+  status     String   @default("processing") // processing | shipped | delivered
+  subtotal   Int
+  discount   Int      @default(0)
+  shipping   Int
+  total      Int
+  couponCode String?
+  fullName   String
+  phone      String
+  // West Bank governorate, in Arabic — see frontend lib/palestineCities.ts.
+  city       String
+  // Single free-text address (street/building/landmark) rather than a
+  // structured address1/2 + state/zip/country — this storefront only ships
+  // within the West Bank via cash-on-delivery, so the formal international
+  // shipping-address shape doesn't apply.
+  address    String
+  createdAt  DateTime @default(now())
+
+  items OrderItem[]
+}
+
+model OrderItem {
+  id          String         @id @default(cuid())
+  orderId     String
+  order       Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product        @relation(fields: [productId], references: [id])
+  variantId   String
+  variant     ProductVariant @relation(fields: [variantId], references: [id])
+  productName String
+  accent      String
+  image       String?
+  label       String?
+  sizeMl      Int?
+  quantity    Int
+  price       Int
+}
+
+model Coupon {
+  code       String  @id
+  label      String
+  percentOff Int
+  active     Boolean @default(true)
+}
