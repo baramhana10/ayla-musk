@@ -213,9 +213,11 @@ async function main() {
 
   // The only account this storefront has: guest/cash-on-delivery checkout
   // means there is no customer account system at all.
-  const adminPasswordHash = await bcrypt.hash("admin123", 10);
+  const adminEmail = process.env.ADMIN_EMAIL || "admin@aylamusk.com";
+  const adminPassword = process.env.ADMIN_PASSWORD || "admin123";
+  const adminPasswordHash = await bcrypt.hash(adminPassword, 10);
   await prisma.user.create({
-    data: { email: "admin@aylamusk.com", name: "Ayla Admin", passwordHash: adminPasswordHash, role: "ADMIN" },
+    data: { email: adminEmail, name: "Ayla Admin", passwordHash: adminPasswordHash, role: "ADMIN" },
   });
 
   let seed = 0;

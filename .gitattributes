@@ -1,0 +1,5 @@
+* text=auto eol=lf
+
+# Shell scripts must stay LF or bash on the VPS breaks on \r
+*.sh text eol=lf
+deploy/** text eol=lf
