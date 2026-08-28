@@ -40,7 +40,10 @@ popd >/dev/null
 echo "==> Frontend: install / build  (NEXT_PUBLIC_API_URL=${PUBLIC_ORIGIN})"
 pushd frontend >/dev/null
   $NPM_CI
-  NEXT_PUBLIC_API_URL="${PUBLIC_ORIGIN}" NEXT_TELEMETRY_DISABLED=1 npm run build
+  # next build MUST run as production — devDeps are already installed above via
+  # --include=dev, and NODE_ENV=development breaks React's static prerender
+  # (TypeError: Cannot read properties of null (reading 'useContext')).
+  NODE_ENV=production NEXT_PUBLIC_API_URL="${PUBLIC_ORIGIN}" NEXT_TELEMETRY_DISABLED=1 npm run build
 popd >/dev/null
 
 echo "==> pm2 (re)start"
