@@ -17,6 +17,7 @@ import reviewRoutes from "./routes/reviews.routes";
 import orderRoutes from "./routes/orders.routes";
 import couponRoutes from "./routes/coupons.routes";
 import adminRoutes from "./routes/admin.routes";
+import uploadRoutes from "./routes/uploads.routes";
 
 const app = express();
 
@@ -47,6 +48,7 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/coupons", couponRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/uploads", uploadRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

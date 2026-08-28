@@ -72,6 +72,33 @@ To wipe and reseed: `RUN_SEED=1 bash /var/www/aylamusk/deploy/deploy.sh`.
 
 ---
 
+## Image uploads (Cloudinary)
+
+Product and category photos are **not** stored on this VPS. The admin browser
+uploads each file straight to Cloudinary; the API only signs the request (the
+secret never leaves the box). Until it's configured, the admin image picker
+says "not configured" — everything else works.
+
+1. Create a free account at cloudinary.com. The dashboard shows **Cloud name**,
+   **API Key**, **API Secret**.
+2. On the VPS, put them in the env file:
+   ```bash
+   nano /etc/aylamusk.env
+   #   CLOUDINARY_CLOUD_NAME=your-cloud-name
+   #   CLOUDINARY_API_KEY=123456789012345
+   #   CLOUDINARY_API_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxx
+   ```
+3. Reload so pm2 picks up the new env:
+   ```bash
+   bash /var/www/aylamusk/deploy/deploy.sh
+   ```
+
+`res.cloudinary.com` is already whitelisted in `next.config.ts`. To move to a
+different account later, just edit `/etc/aylamusk.env` and re-run `deploy.sh` —
+no rebuild-for-domain caveat here, the cloud name is read at runtime.
+
+---
+
 ## Operations
 
 | Task | Command (on VPS) |

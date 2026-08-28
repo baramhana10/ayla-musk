@@ -12,6 +12,7 @@ import type { Product, ScentFamily, ProductVariant, Department, Gender } from "@
 import { Input, Textarea } from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
 import Button from "@/components/ui/Button";
+import ImageUploader from "@/components/admin/ImageUploader";
 import { useT } from "@/store/locale";
 
 const scentFamilyOptions: ScentFamily[] = ["Floral Musk", "Oriental Amber", "Fresh Clean", "Sweet Gourmand", "Fruity Floral"];
@@ -62,7 +63,7 @@ export default function ProductForm({ product }: { product?: Product }) {
   const [waterContent, setWaterContent] = useState(product?.waterContent ?? "");
   const [prescriptionAvailable, setPrescriptionAvailable] = useState(product?.prescriptionAvailable ?? false);
 
-  const [images, setImages] = useState(product?.images.join(", ") ?? "");
+  const [imageUrls, setImageUrls] = useState<string[]>(product?.images ?? []);
   const [variants, setVariants] = useState<ProductVariant[]>(product?.variants ?? [emptyVariant(department)]);
   const [featured, setFeatured] = useState(product?.featured ?? false);
   const [bestseller, setBestseller] = useState(product?.bestseller ?? false);
@@ -126,7 +127,7 @@ export default function ProductForm({ product }: { product?: Product }) {
       waterContent: department === "lenses" ? waterContent || undefined : null,
       prescriptionAvailable: department === "lenses" ? prescriptionAvailable : false,
 
-      images: images.split(",").map((s) => s.trim()).filter(Boolean),
+      images: imageUrls,
       variants: variants.map((v) => ({
         id: v.id.startsWith("new-") ? undefined : v.id,
         label: v.label || undefined,
@@ -251,20 +252,7 @@ export default function ProductForm({ product }: { product?: Product }) {
         </div>
       )}
 
-      <Input
-        label={t("admin.products.form.images")}
-        value={images}
-        onChange={(e) => setImages(e.target.value)}
-        placeholder="/products/musk-oil-trio.jpg"
-      />
-      {images.split(",").map((s) => s.trim()).filter(Boolean).length > 0 && (
-        <div className="flex flex-wrap gap-3">
-          {images.split(",").map((s) => s.trim()).filter(Boolean).map((src, i) => (
-            // eslint-disable-next-line @next/next/no-img-element -- lightweight admin preview of an arbitrary/unvalidated URL, not a next/image asset
-            <img key={i} src={src} alt="" className="h-20 w-20 rounded-lg border border-charcoal/10 object-cover" />
-          ))}
-        </div>
-      )}
+      <ImageUploader value={imageUrls} onChange={setImageUrls} />
 
       <div>
         <div className="mb-3 flex items-center justify-between">

@@ -58,6 +58,14 @@ ADMIN_EMAIL="${ADMIN_EMAIL:-admin@aylamusk.com}"
 ADMIN_PASSWORD="${ADMIN_PASSWORD:-$(openssl rand -base64 12)}"
 RUN_SEED="${RUN_SEED:-$FIRST_RUN}"
 
+# Cloudinary — product/category image uploads. Blank by default; fill these in
+# (here or by passing them to this script) and re-run deploy/deploy.sh. Until
+# set, the admin image uploader returns "not configured".
+CLOUDINARY_CLOUD_NAME="${CLOUDINARY_CLOUD_NAME:-}"
+CLOUDINARY_API_KEY="${CLOUDINARY_API_KEY:-}"
+CLOUDINARY_API_SECRET="${CLOUDINARY_API_SECRET:-}"
+CLOUDINARY_FOLDER="${CLOUDINARY_FOLDER:-aylamusk}"
+
 cat > "$ENV_FILE" <<EOF
 # Written by deploy/setup.sh — edit here, then re-run deploy/deploy.sh
 PUBLIC_HOST=${PUBLIC_HOST}
@@ -69,6 +77,10 @@ DATABASE_URL=file:./prisma/prod.db
 JWT_SECRET=${JWT_SECRET}
 ADMIN_EMAIL=${ADMIN_EMAIL}
 ADMIN_PASSWORD=${ADMIN_PASSWORD}
+CLOUDINARY_CLOUD_NAME=${CLOUDINARY_CLOUD_NAME}
+CLOUDINARY_API_KEY=${CLOUDINARY_API_KEY}
+CLOUDINARY_API_SECRET=${CLOUDINARY_API_SECRET}
+CLOUDINARY_FOLDER=${CLOUDINARY_FOLDER}
 EOF
 chmod 600 "$ENV_FILE"
 echo "    PUBLIC_ORIGIN = ${PUBLIC_ORIGIN}"

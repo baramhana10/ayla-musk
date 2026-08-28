@@ -26,6 +26,12 @@ module.exports = {
         DATABASE_URL: process.env.DATABASE_URL || "file:./prisma/prod.db",
         JWT_SECRET: process.env.JWT_SECRET,
         CLIENT_ORIGIN: process.env.PUBLIC_ORIGIN,
+        // Cloudinary — signed browser uploads for product/category images.
+        // Empty until set in /etc/aylamusk.env; uploads 503 until then.
+        CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME,
+        CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
+        CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
+        CLOUDINARY_FOLDER: process.env.CLOUDINARY_FOLDER,
       },
     },
     {

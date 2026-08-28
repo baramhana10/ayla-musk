@@ -8,6 +8,7 @@ import { categoriesApi, ApiClientError } from "@/lib/api";
 import type { Category } from "@/lib/types";
 import { Input, Textarea } from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
+import ImageUploader from "@/components/admin/ImageUploader";
 import { editorial } from "@/lib/images";
 import { useT } from "@/store/locale";
 
@@ -88,6 +89,10 @@ export default function AdminCategoriesPage() {
         <form onSubmit={handleSave} className="mt-6 max-w-lg space-y-4 rounded-2xl border border-charcoal/10 bg-ivory p-6">
           <Input label={t("admin.categories.name")} value={name} onChange={(e) => setName(e.target.value)} required />
           <Textarea label={t("admin.categories.description")} rows={3} value={description} onChange={(e) => setDescription(e.target.value)} />
+          <ImageUploader
+            value={editing.image ? [editing.image] : []}
+            onChange={(urls) => setEditing({ ...editing, image: urls[urls.length - 1] ?? "" })}
+          />
           <div className="flex gap-3">
             <Button type="submit">{t("common.save")}</Button>
             <Button type="button" variant="outline" onClick={() => setEditing(null)}>{t("common.cancel")}</Button>
