@@ -4,8 +4,9 @@
  * The React intro cannot exist until hydration, so on a cold load the visitor
  * would see a frame or two of the bare hero before the curtain appeared —
  * exactly the "flash" that makes an entrance sequence feel cheap. This renders
- * an inert veil into the initial HTML and switches it on with a synchronous
- * inline script, so the very first painted frame is already the curtain.
+ * an inert veil into the initial HTML. The root layout switches it on with a
+ * synchronous Next script, so the very first painted frame is already the
+ * curtain.
  *
  * The script is also the single source of truth for *whether the intro plays
  * at all*: it decides once, before hydration, and records the answer as a class
@@ -13,7 +14,8 @@
  * sessionStorage — which is what makes the sequence immune to React's
  * double-invoked effects in development.
  */
-const ARM_SCRIPT = `(function(){try{
+export const INTRO_ARM_SCRIPT = `(function(){try{
+if(window.location.pathname!=="/")return;
 var reduced=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 var seen=false;try{seen=sessionStorage.getItem("ayla-intro-v2")==="1"}catch(e){}
 if(!reduced&&!seen){
@@ -25,10 +27,5 @@ setTimeout(function(){document.documentElement.classList.remove("intro-armed")},
 }catch(e){}})();`;
 
 export default function IntroVeil() {
-  return (
-    <>
-      <div id="ayla-veil" aria-hidden="true" />
-      <script dangerouslySetInnerHTML={{ __html: ARM_SCRIPT }} />
-    </>
-  );
+  return <div id="ayla-veil" aria-hidden="true" />;
 }

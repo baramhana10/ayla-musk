@@ -36,6 +36,14 @@ export default function Navbar() {
     { href: "/about", label: t("nav.about") },
   ];
 
+  function isActiveLink(href: string) {
+    const [targetPath, targetQuery] = href.split("?");
+    // `usePathname` keeps this persistent header statically renderable. The
+    // department links intentionally retain their quiet resting state on the
+    // shop route, while the route-level links show the current page clearly.
+    return pathname === targetPath && !targetQuery;
+  }
+
   useEffect(() => {
     // On the homepage the bar rides over a full-height noir hero, so it must
     // not flip to solid ivory the moment the announcement bar scrolls away —
@@ -85,7 +93,11 @@ export default function Navbar() {
               <Link
                 key={l.label}
                 href={l.href}
-                className={cn("text-[11px] uppercase tracking-[0.18em] transition-colors duration-500 link-draw", ink)}
+                aria-current={isActiveLink(l.href) ? "page" : undefined}
+                className={cn(
+                  "text-[11px] uppercase tracking-[0.18em] transition-colors duration-500 link-draw",
+                  isActiveLink(l.href) ? (overHero ? "text-champagne-light" : "text-deep-rose") : ink
+                )}
               >
                 {l.label}
               </Link>

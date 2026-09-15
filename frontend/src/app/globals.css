@@ -374,6 +374,15 @@ html[dir="rtl"] .link-draw::after {
   color: var(--color-noir);
 }
 
+/* A consistent ring keeps the intentionally minimal navigation usable with a
+   keyboard. It remains visible on ivory, photography, and dark editorial
+   panels without changing the resting visual language. */
+:where(a, button, input, select, textarea, summary):focus-visible {
+  outline: 2px solid var(--color-deep-rose);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 2px var(--color-ivory), 0 0 0 4px var(--color-champagne);
+}
+
 /* ---------------------------------------------------------------------------
    Homepage-only warm couture layer — white + warm brown. Scoped entirely to
    `.home-warm` (wraps the homepage route) so the rest of the site — shop, PDP,

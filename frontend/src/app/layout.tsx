@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Manrope, Amiri, Tajawal } from "next/font/google";
+import Script from "next/script";
 import { Toaster } from "sonner";
 import "./globals.css";
+import { INTRO_ARM_SCRIPT } from "@/components/home/IntroVeil";
 import LocaleSync from "@/components/layout/LocaleSync";
 
 const playfair = Playfair_Display({
@@ -59,6 +61,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       suppressHydrationWarning
     >
       <body className="font-body antialiased" suppressHydrationWarning>
+        {/* App Router's supported home for scripts that must run before hydration. */}
+        <Script id="ayla-intro-arm" strategy="beforeInteractive">
+          {INTRO_ARM_SCRIPT}
+        </Script>
         <LocaleSync />
         {children}
         <Toaster
