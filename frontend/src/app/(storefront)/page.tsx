@@ -5,6 +5,7 @@ import BrandStrip from "@/components/home/BrandStrip";
 import CollectionPillars from "@/components/home/CollectionPillars";
 import Bestsellers from "@/components/home/Bestsellers";
 import EditorialBanner from "@/components/home/EditorialBanner";
+import CustomBrandStudio from "@/components/home/CustomBrandStudio";
 
 export default function HomePage() {
   return (
@@ -16,6 +17,7 @@ export default function HomePage() {
       <CollectionPillars />
       <Bestsellers />
       <EditorialBanner />
+      <CustomBrandStudio />
     </div>
   );
 }
