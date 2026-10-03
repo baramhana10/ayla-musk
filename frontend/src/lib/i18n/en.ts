@@ -65,7 +65,7 @@ export const en = {
   hero: {
     kicker: "The House of Ayla",
     madeInDubai: "Made in Dubai",
-    originQuality: "Quality we take pride in. Details made for you.",
+    originQuality: "From Dubai. Quality you feel. Elegance that stays.",
     line1a: "Beauty",
     line1b: "that",
     line2a: "belongs",

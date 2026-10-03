@@ -67,7 +67,7 @@ export const ar: Dictionary = {
   hero: {
     kicker: "دار أيلا",
     madeInDubai: "صُنع في دبي",
-    originQuality: "جودة نعتزّ بها، وتفاصيل تليق بكِ.",
+    originQuality: "من دبي، جودة تُحَسّ… وأناقة تبقى.",
     line1a: "جمال",
     line1b: "يليق",
     line2a: "بكِ",

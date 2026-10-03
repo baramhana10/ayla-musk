@@ -1,18 +1,13 @@
 "use client";
 
-import { useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
   motion,
-  useMotionValue,
   useReducedMotion,
-  useScroll,
-  useSpring,
-  useTransform,
   type Variants,
 } from "framer-motion";
-import { ArrowRight, ArrowLeft, Building2 } from "lucide-react";
+import { ArrowRight, ArrowLeft } from "lucide-react";
 import { useUIStore } from "@/store/ui";
 import { useLocale, useT } from "@/store/locale";
 
@@ -24,8 +19,8 @@ const stage: Variants = {
 };
 
 const rise: Variants = {
-  hidden: { opacity: 0, y: 26, filter: "blur(8px)" },
-  visible: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.9, ease: easeLuxe } },
+  hidden: { opacity: 0, y: 16 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.55, ease: easeLuxe } },
 };
 
 /** Words lift out of a clipped line — set type behaving like set type. Split
@@ -36,7 +31,6 @@ const word: Variants = {
 };
 
 export default function Hero() {
-  const sectionRef = useRef<HTMLElement>(null);
   const introComplete = useUIStore((s) => s.introComplete);
   const prefersReducedMotion = useReducedMotion();
   const t = useT();
@@ -49,49 +43,18 @@ export default function Hero() {
     [{ text: t("hero.line2a"), accent: true }, { text: t("hero.line2b") }],
   ];
 
-  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end start"] });
-  const scrollAtmosY = useTransform(scrollYProgress, [0, 1], ["0%", "28%"]);
-  const scrollPlinthY = useTransform(scrollYProgress, [0, 1], ["0%", "-12%"]);
-  const scrollCopyY = useTransform(scrollYProgress, [0, 1], ["0%", "22%"]);
-  const scrollFade = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
-  // Scroll-linked parallax is a vestibular trigger — pinned to a constant
-  // rather than driven by scroll position when motion is reduced.
-  const atmosY = prefersReducedMotion ? "0%" : scrollAtmosY;
-  const plinthY = prefersReducedMotion ? "0%" : scrollPlinthY;
-  const copyY = prefersReducedMotion ? "0%" : scrollCopyY;
-  const fade = prefersReducedMotion ? 1 : scrollFade;
-
-  // Pointer parallax on the product only. The type stays anchored — a headline
-  // that tilts with the cursor reads as a gimmick, a lit object does not.
-  const px = useMotionValue(0);
-  const py = useMotionValue(0);
-  const rotateX = useSpring(useTransform(py, [-0.5, 0.5], [7, -7]), { stiffness: 70, damping: 16 });
-  const rotateY = useSpring(useTransform(px, [-0.5, 0.5], [-9, 9]), { stiffness: 70, damping: 16 });
-  const glareX = useSpring(useTransform(px, [-0.5, 0.5], ["18%", "82%"]), { stiffness: 70, damping: 20 });
-
-  function handleMouseMove(e: React.MouseEvent<HTMLElement>) {
-    if (prefersReducedMotion) return;
-    const r = e.currentTarget.getBoundingClientRect();
-    px.set((e.clientX - r.left) / r.width - 0.5);
-    py.set((e.clientY - r.top) / r.height - 0.5);
-  }
-
   const shown = introComplete || prefersReducedMotion;
 
   return (
     <section
-      ref={sectionRef}
-      onMouseMove={handleMouseMove}
       // -mt-20 slides the hero up under the sticky bar so the warm field runs
       // edge to edge behind the transparent navbar; z-0 keeps the bar on top.
       className="grain-warm relative isolate z-0 -mt-20 flex min-h-[100svh] items-center overflow-hidden bg-[var(--hw-cream)] pt-20 text-[var(--hw-ink)]"
     >
       {/* Atmosphere: soft warm blooms and a fine bronze grid that only just
           register — daylight depth in place of the noir hero's night glow. */}
-      <motion.div style={{ y: atmosY }} className="pointer-events-none absolute inset-0 -z-10">
+      <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute inset-0 bg-[radial-gradient(120%_90%_at_62%_28%,#f6ead9_0%,#fbf6ef_52%,#fffdfa_100%)]" />
-        <div className="animate-aurora absolute -left-40 top-[-12%] h-[46rem] w-[46rem] rounded-full bg-[var(--hw-tan)]/22 blur-[140px]" />
-        <div className="animate-aurora-slow absolute -right-32 bottom-[-18%] h-[42rem] w-[42rem] rounded-full bg-[var(--hw-brown-light)]/14 blur-[150px]" />
         <div
           className="absolute inset-0 opacity-[0.16]"
           style={{
@@ -102,7 +65,7 @@ export default function Hero() {
             WebkitMaskImage: "radial-gradient(70% 60% at 50% 45%, #000 0%, transparent 100%)",
           }}
         />
-      </motion.div>
+      </div>
 
       {/* Editorial furniture: a rule and vertical caption in the margin — a
           Latin-only magazine detail (vertical Arabic isn't idiomatic script,
@@ -129,25 +92,14 @@ export default function Hero() {
       <div className="container-luxe relative grid grid-cols-1 items-center gap-14 py-24 lg:grid-cols-[1.05fr_0.95fr] lg:gap-10 lg:py-0">
         {/* ------------------------------------------------ copy */}
         <motion.div
-          style={{ opacity: fade, y: copyY }}
           variants={stage}
-          initial="hidden"
+          initial={prefersReducedMotion ? false : "hidden"}
           animate={shown ? "visible" : "hidden"}
           className="order-2 text-center lg:order-1 lg:ps-8 lg:text-start xl:ps-14"
         >
           <motion.div variants={rise} className="flex items-center justify-center gap-4 lg:justify-start">
             <span className="h-px w-10 bg-[var(--hw-tan)]" />
             <span className="text-[10px] uppercase tracking-[0.42em] text-[var(--hw-brown)]">{t("hero.kicker")}</span>
-          </motion.div>
-
-          <motion.div variants={rise} className="mx-auto mt-6 flex w-fit items-center gap-3 rounded-2xl border border-[var(--hw-tan)]/45 bg-[var(--hw-white)]/80 px-4 py-3 text-start shadow-[0_4px_18px_rgba(58,42,30,0.04)] sm:gap-4 sm:px-5 lg:mx-0">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--hw-tan)]/40 bg-[var(--hw-sand)] text-[var(--hw-brown)]">
-              <Building2 size={21} strokeWidth={1.4} aria-hidden="true" />
-            </span>
-            <div>
-              <p className="text-base font-semibold text-[var(--hw-espresso)] sm:text-lg">{t("hero.madeInDubai")}</p>
-              <p className="mt-1 text-[11px] leading-relaxed text-[var(--hw-brown)] sm:text-xs">{t("hero.originQuality")}</p>
-            </div>
           </motion.div>
 
           <h1
@@ -159,7 +111,7 @@ export default function Hero() {
               <span key={li} className="block overflow-hidden pb-[0.08em]">
                 {line.map((w, wi) => (
                   <motion.span key={wi} variants={word} className="me-[0.24em] inline-block">
-                    {w.accent ? <em className="text-bronze not-italic">{w.text}</em> : w.text}
+                    {w.accent ? <em className="not-italic text-[var(--hw-brown)]">{w.text}</em> : w.text}
                   </motion.span>
                 ))}
               </span>
@@ -172,6 +124,11 @@ export default function Hero() {
           >
             {t("hero.paragraph")}
           </motion.p>
+
+          <motion.div variants={rise} className="mx-auto mt-7 max-w-[27rem] border-s-2 border-[var(--hw-tan)] ps-5 text-start lg:mx-0">
+            <p className="font-display text-[2rem] leading-[1.5] text-[var(--hw-brown-deep)] sm:text-[2.5rem]">{t("hero.madeInDubai")}</p>
+            <p className="mt-1 text-sm leading-relaxed text-[var(--hw-brown)]">{t("hero.originQuality")}</p>
+          </motion.div>
 
           <motion.div
             variants={rise}
@@ -220,18 +177,16 @@ export default function Hero() {
 
         {/* ------------------------------------------------ product plinth */}
         <motion.div
-          style={{ y: plinthY, perspective: 1200 }}
           className="order-1 flex justify-center lg:order-2"
         >
           <motion.div
-            initial={{ opacity: 0, scale: 0.92, y: 30 }}
+            initial={prefersReducedMotion ? false : { opacity: 0, y: 16 }}
             animate={shown ? { opacity: 1, scale: 1, y: 0 } : {}}
-            transition={{ duration: 1.4, delay: 0.25, ease: easeLuxe }}
-            style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
+            transition={{ duration: 0.65, delay: 0.15, ease: easeLuxe }}
             className="relative"
           >
             {/* Halo behind the object. */}
-            <div className="absolute inset-0 -z-10 scale-125 rounded-full bg-[var(--hw-tan)]/25 blur-[90px]" />
+            <div className="absolute -inset-12 -z-10 bg-[radial-gradient(ellipse,rgba(201,163,119,0.2),transparent_70%)]" />
 
             {/* Warm tan frame offset behind the photograph. */}
             <motion.div
@@ -243,9 +198,7 @@ export default function Hero() {
             />
 
             <motion.figure
-              animate={prefersReducedMotion ? undefined : { y: [0, -12, 0] }}
-              transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 1.4 }}
-              className="shadow-warm-plinth relative h-[24rem] w-[19rem] overflow-hidden rounded-[1.75rem] sm:h-[31rem] sm:w-[24rem]"
+              className="shadow-warm-plinth relative aspect-[19/24] w-[min(19rem,78vw)] overflow-hidden rounded-[1.75rem] sm:aspect-[24/31] sm:w-[24rem]"
             >
               <Image
                 src="/products/musk-collection-giftbox.jpg"
@@ -256,16 +209,6 @@ export default function Hero() {
                 className="object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[var(--hw-espresso)]/55 via-transparent to-[var(--hw-espresso)]/10" />
-
-              {/* Glare tracks the pointer — the object reads as glass under a
-                  fixed light rather than a flat card. */}
-              {!prefersReducedMotion && (
-                <motion.div
-                  aria-hidden="true"
-                  style={{ left: glareX, mixBlendMode: "soft-light" }}
-                  className="absolute inset-y-0 -ml-24 w-48 bg-gradient-to-r from-transparent via-white/55 to-transparent blur-lg"
-                />
-              )}
 
               {/* One-shot foil sweep as the object settles. */}
               {!prefersReducedMotion && (
@@ -293,32 +236,12 @@ export default function Hero() {
               </motion.figcaption>
             </motion.figure>
 
-            {/* Reflection on the plinth. */}
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-x-8 top-full h-24 scale-y-[-1] overflow-hidden rounded-[1.75rem] opacity-[0.12] blur-[3px]"
-              style={{
-                maskImage: "linear-gradient(to top, transparent, #000)",
-                WebkitMaskImage: "linear-gradient(to top, transparent, #000)",
-              }}
-            >
-              <Image
-                src="/products/musk-collection-giftbox.jpg"
-                alt=""
-                fill
-                sizes="24rem"
-                // object-bottom, not object-top: the row of the photo nearest the
-                // plinth is the one that has to appear nearest the reflection.
-                className="object-cover object-bottom"
-              />
-            </div>
           </motion.div>
         </motion.div>
       </div>
 
-      {/* Scroll cue: a hairline that fills, rather than a bouncing chevron. */}
+      {/* Static scroll cue avoids continuous animation while the page is idle. */}
       <motion.div
-        style={{ opacity: fade }}
         initial={{ opacity: 0 }}
         animate={{ opacity: shown ? 1 : 0 }}
         transition={{ delay: 1.6, duration: 1 }}
@@ -326,10 +249,8 @@ export default function Hero() {
       >
         <span className="text-[9px] uppercase tracking-[0.45em] text-[var(--hw-brown)]/60">{t("hero.scroll")}</span>
         <span className="relative h-12 w-px overflow-hidden bg-[var(--hw-brown)]/20">
-          <motion.span
+          <span
             className="absolute inset-x-0 top-0 h-1/2 bg-[var(--hw-brown-deep)]"
-            animate={prefersReducedMotion ? undefined : { y: ["-100%", "200%"] }}
-            transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
           />
         </span>
       </motion.div>
