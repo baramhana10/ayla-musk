@@ -5,6 +5,7 @@ import { Toaster } from "sonner";
 import "./globals.css";
 import { INTRO_ARM_SCRIPT } from "@/components/home/IntroVeil";
 import LocaleSync from "@/components/layout/LocaleSync";
+import WhatsAppButton from "@/components/layout/WhatsAppButton";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -67,6 +68,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         </Script>
         <LocaleSync />
         {children}
+        <WhatsAppButton />
         <Toaster
           position="bottom-center"
           toastOptions={{
