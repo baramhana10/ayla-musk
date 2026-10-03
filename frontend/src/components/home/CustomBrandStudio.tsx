@@ -37,13 +37,14 @@ export default function CustomBrandStudio() {
             viewport={{ once: true, amount: 0.2 }}
             transition={{ duration: 0.65 }}
           >
-            <p className="mb-5 text-sm text-[var(--hw-brown)]">من فكرة في بالك، إلى علامة تحمل اسمك.</p>
+            <p className="mb-5 text-sm text-[var(--hw-brown)]">براندك من الألف إلى الياء.</p>
             <h2 id="custom-brand-title" className="text-[clamp(2.4rem,5vw,4.5rem)] font-medium leading-[1.35] tracking-tight">
               اسمك على العبوة.<br />
               <span className="text-[var(--hw-brown)]">بصمتك في كل تفصيل.</span>
             </h2>
             <p className="mt-6 max-w-lg text-[15px] leading-[2] text-[var(--hw-brown-deep)]/80 sm:text-base">
-              اصنع علامتك الخاصة مع أيلا مَسك. نطوّر معك الاسم والهوية البصرية وتصميم العبوة والتغليف، لتصبح فكرتك منتجاً يعكس ذوقك ويلائم رؤيتك.
+              <span className="mb-3 block text-lg font-medium text-[var(--hw-ink)] sm:text-xl">نساعدك تبني براندك، من أول فكرة حتى المنتج الجاهز.</span>
+              مع أيلا مَسك، نرافقك في كل خطوة: من اختيار الاسم وتطوير الهوية البصرية، إلى تصميم العبوة والتغليف وتجهيز منتج يحمل اسمك. كل تفصيل نطوّره معك ليعكس رؤيتك ويمنح علامتك بصمتها الخاصة.
             </p>
 
             <div className="mt-8 flex flex-wrap gap-x-5 gap-y-3 border-y border-[var(--hw-line)] py-5 text-sm">
@@ -115,7 +116,7 @@ export default function CustomBrandStudio() {
           {[
             { number: "01", title: "نسمع فكرتك", body: "أخبرنا عن الاسم، جمهورك، والتفاصيل التي تتخيّلها." },
             { number: "02", title: "نرسم هويّتك", body: "نناقش معك الألوان والتصميم والتغليف المناسب لعلامتك." },
-            { number: "03", title: "نصنعها معك", body: "نتفق على التفاصيل والمتطلبات، ونحوّل الرؤية إلى خطوات واضحة." },
+            { number: "03", title: "من التصميم إلى المنتج", body: "نحوّل التفاصيل المتفق عليها إلى منتج جاهز يحمل اسم علامتك وبصمتها." },
           ].map((step) => (
             <div key={step.number} className="flex gap-4">
               <span dir="ltr" className="pt-1 font-display text-sm text-[var(--hw-brown)]">{step.number}</span>
