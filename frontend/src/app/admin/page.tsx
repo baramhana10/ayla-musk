@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { DollarSign, ShoppingCart, Package, AlertTriangle } from "lucide-react";
+import { DollarSign, ShoppingCart, Package, AlertTriangle, Users, Clock, CalendarDays } from "lucide-react";
 import { productsApi, ordersApi, adminApi, type OrderDto, type AdminStatsDto } from "@/lib/api";
 import type { Product } from "@/lib/types";
 import { formatPrice } from "@/lib/utils";
@@ -16,6 +16,7 @@ export default function AdminDashboardPage() {
   const [orders, setOrders] = useState<OrderDto[]>([]);
   const [lowStock, setLowStock] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     Promise.all([adminApi.stats(), ordersApi.list(), productsApi.list()])
@@ -24,15 +25,33 @@ export default function AdminDashboardPage() {
         setOrders(o.orders);
         setLowStock(p.products.filter((prod) => prod.variants.some((v) => v.stock > 0 && v.stock <= 10)));
       })
+      .catch(() => setError(true))
       .finally(() => setLoading(false));
+    const refresh = window.setInterval(() => {
+      if (document.visibilityState === "visible") {
+        adminApi.stats().then(setStats).catch(() => {});
+      }
+    }, 60_000);
+    return () => window.clearInterval(refresh);
   }, []);
 
-  if (loading || !stats) return null;
+  if (loading) return <p role="status" className="text-sm text-charcoal/60">{t("admin.dashboard.loading")}</p>;
+  if (error || !stats) return <p role="alert" className="text-sm text-wine">{t("admin.dashboard.loadError")}</p>;
 
   return (
     <div>
       <h1 className="font-display text-3xl text-charcoal">{t("admin.dashboard.title")}</h1>
       <p className="mt-1 text-sm text-charcoal/50">{t("admin.dashboard.subtitle")}</p>
+
+      <section className="mt-8" aria-labelledby="visitor-heading">
+        <h2 id="visitor-heading" className="font-display text-xl text-charcoal">{t("admin.dashboard.visitors")}</h2>
+        <p className="mt-1 max-w-3xl text-xs leading-relaxed text-charcoal/50">{t("admin.dashboard.visitorNote")}</p>
+        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <StatCard icon={Users} label={t("admin.dashboard.totalVisitors")} value={stats.visitorCount.toLocaleString()} hint={t("admin.dashboard.sinceTracking")} />
+          <StatCard icon={Clock} label={t("admin.dashboard.last24Hours")} value={stats.visitors24Hours.toLocaleString()} hint={t("admin.dashboard.uniqueVisitors")} />
+          <StatCard icon={CalendarDays} label={t("admin.dashboard.last7Days")} value={stats.visitors7Days.toLocaleString()} hint={t("admin.dashboard.uniqueVisitors")} />
+        </div>
+      </section>
 
       <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard icon={DollarSign} label={t("admin.dashboard.totalRevenue")} value={formatPrice(stats.revenue)} hint={`${stats.orderCount} ${t("admin.dashboard.orders")}`} />

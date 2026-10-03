@@ -2,6 +2,15 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// Anonymous browser identities, independent of customer accounts.
+model SiteVisitor {
+  id        String   @id @map("_id")
+  firstSeen DateTime @default(now())
+  lastSeen  DateTime @default(now())
+
+  @@index([lastSeen])
+}
+
 datasource db {
   provider = "mongodb"
   url      = env("DATABASE_URL")

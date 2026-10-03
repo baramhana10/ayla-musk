@@ -6,14 +6,17 @@ import { requireAdmin } from "../middleware/auth";
 const router = Router();
 router.use(requireAdmin);
 
-// No customer-account concept on this storefront (guest checkout only), so
-// stats/management here cover orders and stock only — not a customer list.
+// Visitor counts describe anonymous browsers, independent of guest orders.
 router.get(
   "/stats",
   asyncHandler(async (_req, res) => {
-    const [orders, products] = await Promise.all([
+    const now = Date.now();
+    const [orders, products, visitorCount, visitors24Hours, visitors7Days] = await Promise.all([
       prisma.order.findMany(),
       prisma.product.findMany({ include: { variants: true } }),
+      prisma.siteVisitor.count(),
+      prisma.siteVisitor.count({ where: { lastSeen: { gte: new Date(now - 24 * 60 * 60 * 1000) } } }),
+      prisma.siteVisitor.count({ where: { lastSeen: { gte: new Date(now - 7 * 24 * 60 * 60 * 1000) } } }),
     ]);
 
     const revenue = orders.reduce((sum, o) => sum + o.total, 0);
@@ -24,6 +27,9 @@ router.get(
       orderCount: orders.length,
       avgOrderValue: orders.length ? Math.round(revenue / orders.length) : 0,
       lowStockCount: lowStock,
+      visitorCount,
+      visitors24Hours,
+      visitors7Days,
     });
   })
 );

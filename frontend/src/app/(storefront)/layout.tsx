@@ -6,12 +6,14 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import CartDrawer from "@/components/layout/CartDrawer";
 import BottomTabBar from "@/components/layout/BottomTabBar";
+import VisitorTracker from "@/components/layout/VisitorTracker";
 import { useT } from "@/store/locale";
 
 export default function StorefrontLayout({ children }: { children: React.ReactNode }) {
   const t = useT();
   return (
     <>
+      <VisitorTracker />
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-charcoal focus:px-5 focus:py-3 focus:text-sm focus:text-ivory"

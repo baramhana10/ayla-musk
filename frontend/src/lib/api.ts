@@ -137,7 +137,13 @@ export const couponsApi = {
 };
 
 // ---------- Admin ----------
-export interface AdminStatsDto { revenue: number; orderCount: number; avgOrderValue: number; lowStockCount: number }
+export interface AdminStatsDto { revenue: number; orderCount: number; avgOrderValue: number; lowStockCount: number; visitorCount: number; visitors24Hours: number; visitors7Days: number }
+
+export const analyticsApi = {
+  visit: (visitorId: string) => request<void>("/api/analytics/visit", {
+    method: "POST", body: JSON.stringify({ visitorId }),
+  }),
+};
 
 export const adminApi = {
   stats: () => request<AdminStatsDto>("/api/admin/stats"),
