@@ -143,41 +143,20 @@ export const adminApi = {
   stats: () => request<AdminStatsDto>("/api/admin/stats"),
 };
 
-// ---------- Uploads (Cloudinary signed direct-upload) ----------
-export interface UploadSignatureDto {
-  cloudName: string;
-  apiKey: string;
-  timestamp: number;
-  signature: string;
-  folder: string;
-}
-
-export const uploadsApi = {
-  signature: () => request<UploadSignatureDto>("/api/uploads/signature", { method: "POST" }),
-};
-
-/**
- * Upload one file straight to Cloudinary from the browser using a signature
- * minted by our backend. The file bytes never pass through our server.
- * Returns the hosted HTTPS URL to store on the product / category.
- */
+/** Upload one product or category image into MongoDB GridFS. */
 export async function uploadImage(file: File): Promise<string> {
-  const sig = await uploadsApi.signature();
-
-  const form = new FormData();
-  form.append("file", file);
-  form.append("api_key", sig.apiKey);
-  form.append("timestamp", String(sig.timestamp));
-  form.append("signature", sig.signature);
-  form.append("folder", sig.folder);
-
-  const res = await fetch(`https://api.cloudinary.com/v1_1/${sig.cloudName}/image/upload`, {
+  const res = await fetch(`${API_URL}/api/uploads`, {
     method: "POST",
-    body: form,
+    credentials: "include",
+    headers: {
+      "Content-Type": file.type,
+      "X-File-Name": file.name,
+    },
+    body: file,
   });
   const data = await res.json().catch(() => ({}));
-  if (!res.ok || !data.secure_url) {
+  if (!res.ok || !data.url) {
     throw new ApiClientError(res.status || 500, data?.error?.message || "Image upload failed.");
   }
-  return data.secure_url as string;
+  return data.url as string;
 }

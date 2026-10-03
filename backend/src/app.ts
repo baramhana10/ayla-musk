@@ -21,6 +21,7 @@ import uploadRoutes from "./routes/uploads.routes";
 
 const app = express();
 
+app.set("trust proxy", 1);
 app.use(helmet({ crossOriginResourcePolicy: false }));
 app.use(
   cors({

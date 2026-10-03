@@ -1,51 +1,54 @@
-import { Router } from "express";
-import crypto from "crypto";
-import { asyncHandler } from "../utils/asyncHandler";
+import express, { Router } from "express";
+import { ObjectId } from "mongodb";
+import { getUploadsBucket } from "../lib/uploads";
 import { requireAdmin } from "../middleware/auth";
-import { ApiError } from "../utils/ApiError";
+import { badRequest, notFound } from "../utils/ApiError";
+import { asyncHandler } from "../utils/asyncHandler";
 
 const router = Router();
 
-// All product / category images live on Cloudinary — the browser uploads the
-// file straight to Cloudinary's API, so the bytes never touch this server or
-// its disk. This endpoint only mints a short-lived upload signature using the
-// account's API secret, which stays here and is never sent to the client.
-//
-// Cloudinary signature algorithm (see cloudinary.com/documentation/signatures):
-//   sha1( "<k1=v1&k2=v2&...sorted>" + api_secret )  — hex digest
-// Only the params actually sent with the upload (minus file / api_key /
-// resource_type / cloud_name) are signed. We fix `folder` so every asset lands
-// in one place and the client can't scatter uploads across the account.
-const UPLOAD_FOLDER = process.env.CLOUDINARY_FOLDER || "aylamusk";
-
+// Product and category image bytes are stored in MongoDB GridFS. Product
+// documents retain only the public URL returned by this route.
 router.post(
-  "/signature",
+  "/",
   requireAdmin,
-  asyncHandler(async (_req, res) => {
-    const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
-    const apiKey = process.env.CLOUDINARY_API_KEY;
-    const apiSecret = process.env.CLOUDINARY_API_SECRET;
-
-    if (!cloudName || !apiKey || !apiSecret) {
-      throw new ApiError(503, "Image uploads are not configured on the server.");
+  express.raw({ type: "image/*", limit: "10mb" }),
+  asyncHandler(async (req, res) => {
+    const contentType = req.header("content-type")?.split(";")[0];
+    if (!contentType?.startsWith("image/") || !Buffer.isBuffer(req.body) || req.body.length === 0) {
+      throw badRequest("Upload a valid image file.");
     }
 
-    const timestamp = Math.floor(Date.now() / 1000);
-    const params: Record<string, string | number> = {
-      folder: UPLOAD_FOLDER,
-      timestamp,
-    };
+    const rawName = req.header("x-file-name") || "image";
+    const filename = rawName.replace(/[^a-zA-Z0-9._-]/g, "-").slice(0, 160) || "image";
+    const bucket = await getUploadsBucket();
+    const stream = bucket.openUploadStream(filename, { metadata: { contentType } });
 
-    const toSign = Object.keys(params)
-      .sort()
-      .map((key) => `${key}=${params[key]}`)
-      .join("&");
-    const signature = crypto
-      .createHash("sha1")
-      .update(toSign + apiSecret)
-      .digest("hex");
+    await new Promise<void>((resolve, reject) => {
+      stream.once("error", reject);
+      stream.once("finish", resolve);
+      stream.end(req.body);
+    });
 
-    res.json({ cloudName, apiKey, timestamp, signature, folder: UPLOAD_FOLDER });
+    res.status(201).json({ url: `${req.protocol}://${req.get("host")}/api/uploads/${stream.id.toString()}` });
+  })
+);
+
+router.get(
+  "/:id",
+  asyncHandler(async (req, res, next) => {
+    const idParam = req.params.id;
+    if (typeof idParam !== "string" || !ObjectId.isValid(idParam)) throw notFound("Image");
+
+    const id = new ObjectId(idParam);
+    const bucket = await getUploadsBucket();
+    const file = await bucket.find({ _id: id }).next();
+    if (!file) throw notFound("Image");
+
+    const contentType = typeof file.metadata?.contentType === "string" ? file.metadata.contentType : "application/octet-stream";
+    res.setHeader("Content-Type", contentType);
+    res.setHeader("Cache-Control", "public, max-age=31536000, immutable");
+    bucket.openDownloadStream(id).once("error", next).pipe(res);
   })
 );
 
