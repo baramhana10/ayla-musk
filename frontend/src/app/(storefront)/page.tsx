@@ -5,9 +5,6 @@ import BrandStrip from "@/components/home/BrandStrip";
 import CollectionPillars from "@/components/home/CollectionPillars";
 import Bestsellers from "@/components/home/Bestsellers";
 import EditorialBanner from "@/components/home/EditorialBanner";
-import Testimonials from "@/components/home/Testimonials";
-import InstaGallery from "@/components/home/InstaGallery";
-import NewsletterBanner from "@/components/home/NewsletterBanner";
 
 export default function HomePage() {
   return (
@@ -19,9 +16,6 @@ export default function HomePage() {
       <CollectionPillars />
       <Bestsellers />
       <EditorialBanner />
-      <Testimonials />
-      <InstaGallery />
-      <NewsletterBanner />
     </div>
   );
 }
