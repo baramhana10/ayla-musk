@@ -11,6 +11,7 @@
     "prisma:push": "prisma db push",
     "seed": "ts-node prisma/seed.ts",
     "migrate:sqlite-to-mongo": "ts-node scripts/migrate-sqlite-to-mongodb.ts",
+    "admin:upsert": "ts-node scripts/upsert-admin.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
