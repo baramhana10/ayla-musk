@@ -13,23 +13,7 @@ export const WEST_BANK_CITIES = [
 
 export const JERUSALEM_AND_48_CITIES = [
   "القدس",
-  "الناصرة",
-  "حيفا",
-  "يافا",
-  "عكا",
-  "اللد",
-  "الرملة",
-  "أم الفحم",
-  "الطيبة",
-  "الطيرة",
-  "شفاعمرو",
-  "سخنين",
-  "طمرة",
-  "عرابة",
-  "كفر كنا",
-  "كفر قاسم",
-  "رهط",
-  "بئر السبع",
+  "مناطق 48",
 ] as const;
 
 export const DELIVERY_CITIES = [...WEST_BANK_CITIES, ...JERUSALEM_AND_48_CITIES] as const;

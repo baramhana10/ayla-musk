@@ -12,7 +12,7 @@ import { useCartDetails, useCartStore, COUPONS } from "@/store/cart";
 import { useLastOrderStore } from "@/store/lastOrder";
 import { ordersApi, ApiClientError } from "@/lib/api";
 import { deliverySchema, type DeliveryFormValues } from "@/lib/checkoutSchema";
-import { getShippingCost, JERUSALEM_AND_48_CITIES, WEST_BANK_CITIES } from "@/lib/palestineCities";
+import { DELIVERY_CITIES, getShippingCost } from "@/lib/palestineCities";
 import { formatPrice } from "@/lib/utils";
 import { Input, Textarea } from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
@@ -42,7 +42,7 @@ export default function CheckoutPage() {
 
   const coupon = couponCode ? COUPONS[couponCode] : null;
   const discount = coupon ? Math.round(subtotal * (coupon.percentOff / 100)) : 0;
-  const selectedCity = delivery?.city ?? deliveryForm.watch("city");
+  const selectedCity = step === 2 ? delivery?.city : deliveryForm.watch("city");
   const shippingCost = getShippingCost(selectedCity);
   const total = subtotal - discount + (shippingCost ?? 0);
 
@@ -102,12 +102,9 @@ export default function CheckoutPage() {
                 <Input label={t("checkout.phone")} type="tel" placeholder="05X-XXX-XXXX" {...deliveryForm.register("phone")} error={deliveryForm.formState.errors.phone?.message} />
                 <Select label={t("checkout.city")} {...deliveryForm.register("city")} error={deliveryForm.formState.errors.city?.message}>
                   <option value="">{t("checkout.selectCity")}</option>
-                  <optgroup label="الضفة الغربية — ₪20">
-                    {WEST_BANK_CITIES.map((city) => <option key={city} value={city}>{city}</option>)}
-                  </optgroup>
-                  <optgroup label="القدس ومناطق الـ48 — ₪50">
-                    {JERUSALEM_AND_48_CITIES.map((city) => <option key={city} value={city}>{city}</option>)}
-                  </optgroup>
+                  {DELIVERY_CITIES.map((city) => (
+                    <option key={city} value={city}>{city}</option>
+                  ))}
                 </Select>
                 {shippingCost !== null && (
                   <div className="flex items-center justify-between rounded-xl border border-deep-rose/15 bg-blush-soft/70 px-4 py-3 text-sm">
