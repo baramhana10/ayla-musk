@@ -52,7 +52,7 @@ export const en = {
   },
 
   announcement: {
-    m1: "Complimentary shipping on all orders over ₪75",
+    m1: "West Bank delivery ₪20 — Jerusalem & 1948 areas ₪50",
     m2: "New — Musk Collection has arrived",
     m3: "Sign up for 15% off your first order",
   },
@@ -246,7 +246,7 @@ export const en = {
     increaseQuantity: "Increase quantity",
     addToBag: "Add to Bag",
     addedToBagShort: "Added to Bag",
-    freeShipping: "Free shipping over ₪75",
+    deliveryRates: "Delivery: West Bank ₪20, Jerusalem & 1948 areas ₪50",
     returns30: "30-day returns",
     crueltyFree: "Cruelty-free formula",
     description: "Description",
@@ -269,7 +269,7 @@ export const en = {
     prescriptionAvailable: "Prescription Available",
     shippingReturns: "Shipping & Returns",
     shippingReturnsBody:
-      "Complimentary shipping on all orders over ₪75. Standard delivery arrives in 3–5 business days. Not in love with your scent? Return any unopened item within 30 days for a full refund.",
+      "Delivery costs ₪20 per order to the West Bank and ₪50 to Jerusalem and 1948 areas. Standard delivery arrives in 3–5 business days. Not in love with your scent? Return any unopened item within 30 days for a full refund.",
     reviewsTitle: "Reviews",
     reviewsSubtitle: "What our clients are saying about",
     reviews: "reviews",
@@ -474,7 +474,7 @@ export const en = {
     q2: "Can I change or cancel my order?",
     a2: "We begin processing quickly, so please contact us within 2 hours of placing your order if you need to make a change.",
     q3: "What are your shipping rates?",
-    a3: "Shipping is complimentary on all orders over ₪75. Orders below that ship for a flat ₪6.50, arriving in 3–5 business days.",
+    a3: "Delivery costs ₪20 per order to the West Bank and ₪50 to Jerusalem and 1948 areas, regardless of order value. Your delivery charge appears when you select your city at checkout.",
     q4: "What is your return policy?",
     a4: "Unopened items may be returned within 30 days of delivery for a full refund. Opened perfume oils and mists are final sale for hygiene reasons.",
     q5: "Do you ship internationally?",

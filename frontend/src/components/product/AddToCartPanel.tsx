@@ -108,7 +108,7 @@ export default function AddToCartPanel({ product }: { product: Product }) {
 
       <div className="grid grid-cols-1 gap-3 border-t border-charcoal/10 pt-6 sm:grid-cols-3">
         {[
-          { icon: Truck, label: t("product.freeShipping") },
+          { icon: Truck, label: t("product.deliveryRates") },
           { icon: RotateCcw, label: t("product.returns30") },
           { icon: ShieldCheck, label: t("product.crueltyFree") },
         ].map((f) => (
