@@ -12,7 +12,7 @@ import {
   useTransform,
   type Variants,
 } from "framer-motion";
-import { ArrowRight, ArrowLeft } from "lucide-react";
+import { ArrowRight, ArrowLeft, Building2 } from "lucide-react";
 import { useUIStore } from "@/store/ui";
 import { useLocale, useT } from "@/store/locale";
 
@@ -138,6 +138,16 @@ export default function Hero() {
           <motion.div variants={rise} className="flex items-center justify-center gap-4 lg:justify-start">
             <span className="h-px w-10 bg-[var(--hw-tan)]" />
             <span className="text-[10px] uppercase tracking-[0.42em] text-[var(--hw-brown)]">{t("hero.kicker")}</span>
+          </motion.div>
+
+          <motion.div variants={rise} className="mx-auto mt-6 flex w-fit items-center gap-3 rounded-2xl border border-[var(--hw-tan)]/45 bg-[var(--hw-white)]/80 px-4 py-3 text-start shadow-[0_4px_18px_rgba(58,42,30,0.04)] sm:gap-4 sm:px-5 lg:mx-0">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[var(--hw-tan)]/40 bg-[var(--hw-sand)] text-[var(--hw-brown)]">
+              <Building2 size={21} strokeWidth={1.4} aria-hidden="true" />
+            </span>
+            <div>
+              <p className="text-base font-semibold text-[var(--hw-espresso)] sm:text-lg">{t("hero.madeInDubai")}</p>
+              <p className="mt-1 text-[11px] leading-relaxed text-[var(--hw-brown)] sm:text-xs">{t("hero.originQuality")}</p>
+            </div>
           </motion.div>
 
           <h1

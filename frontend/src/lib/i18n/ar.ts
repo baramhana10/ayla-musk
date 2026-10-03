@@ -66,6 +66,8 @@ export const ar: Dictionary = {
 
   hero: {
     kicker: "دار أيلا",
+    madeInDubai: "صُنع في دبي",
+    originQuality: "جودة نعتزّ بها، وتفاصيل تليق بكِ.",
     line1a: "جمال",
     line1b: "يليق",
     line2a: "بكِ",
@@ -75,8 +77,8 @@ export const ar: Dictionary = {
     ctaPrimary: "اكتشفي المجموعة",
     ctaSecondary: "اكتشفي زيوت المسك",
     margin: "دار أيلا — الإصدار 01",
-    stat1k: "+24 ألف",
-    stat1v: "تقييم خمس نجوم",
+    stat1k: "دبي",
+    stat1v: "بفخر، صُنع في دبي",
     stat2k: "100%",
     stat2v: "زيوت خالية من الكحول",
     stat3k: "دفعات",
@@ -87,7 +89,7 @@ export const ar: Dictionary = {
   },
 
   brandStrip: {
-    v1: "مخلوطة يدويًا بدفعات صغيرة",
+    v1: "صُنع في دبي — جودة في كل تفصيل",
     v2: "زيوت عطرية خالية من الكحول",
     v3: "غير مختبرة على الحيوانات ونباتية",
     v4: "تغليف هدايا مجاني",

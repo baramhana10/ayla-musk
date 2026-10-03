@@ -64,6 +64,8 @@ export const en = {
 
   hero: {
     kicker: "The House of Ayla",
+    madeInDubai: "Made in Dubai",
+    originQuality: "Quality we take pride in. Details made for you.",
     line1a: "Beauty",
     line1b: "that",
     line2a: "belongs",
@@ -73,8 +75,8 @@ export const en = {
     ctaPrimary: "Explore the Collection",
     ctaSecondary: "Discover musk oils",
     margin: "Maison Ayla — Vol. 01",
-    stat1k: "24k+",
-    stat1v: "Five-star reviews",
+    stat1k: "Dubai",
+    stat1v: "Proudly made in Dubai",
     stat2k: "100%",
     stat2v: "Alcohol-free oils",
     stat3k: "Small",
@@ -85,7 +87,7 @@ export const en = {
   },
 
   brandStrip: {
-    v1: "Hand-blended in small batches",
+    v1: "Made in Dubai — quality in every detail",
     v2: "Alcohol-free perfume oils",
     v3: "Cruelty-free & vegan",
     v4: "Complimentary gift wrapping",
