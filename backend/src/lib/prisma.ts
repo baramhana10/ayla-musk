@@ -1,5 +1,4 @@
 import { PrismaClient } from "@prisma/client";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 
 declare global {
   // eslint-disable-next-line no-var
@@ -7,8 +6,7 @@ declare global {
 }
 
 function createClient() {
-  const adapter = new PrismaBetterSqlite3({ url: process.env.DATABASE_URL as string });
-  return new PrismaClient({ adapter });
+  return new PrismaClient();
 }
 
 export const prisma = global.__prisma ?? createClient();

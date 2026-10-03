@@ -6,6 +6,7 @@
 #
 # Honours /etc/aylamusk.env (written by deploy/setup.sh).
 #   RUN_SEED=1 bash deploy/deploy.sh   # wipe + reseed the database
+#   MIGRATE_SQLITE_PATH=/root/prod.db bash deploy/deploy.sh  # one-time SQLite -> MongoDB transfer
 set -euo pipefail
 
 ENV_FILE=/etc/aylamusk.env
@@ -14,7 +15,13 @@ set -a; . "$ENV_FILE"; set +a
 
 APP_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 RUN_SEED="${RUN_SEED:-0}"
+MIGRATE_SQLITE_PATH="${MIGRATE_SQLITE_PATH:-}"
 cd "$APP_DIR"
+
+if [[ "$RUN_SEED" == "1" && -n "$MIGRATE_SQLITE_PATH" ]]; then
+  echo "RUN_SEED and MIGRATE_SQLITE_PATH cannot be used together." >&2
+  exit 1
+fi
 
 echo "==> Pulling ${BRANCH:-main}"
 git config --global --add safe.directory "$APP_DIR" 2>/dev/null || true
@@ -29,7 +36,12 @@ echo "==> Backend: install / generate / migrate / build"
 pushd backend >/dev/null
   $NPM_CI
   npx prisma generate
-  npx prisma migrate deploy
+  npx prisma db push --skip-generate
+  if [[ -n "$MIGRATE_SQLITE_PATH" ]]; then
+    [[ -f "$MIGRATE_SQLITE_PATH" ]] || { echo "SQLite source not found: $MIGRATE_SQLITE_PATH" >&2; exit 1; }
+    echo "    migrating SQLite data to MongoDB"
+    SQLITE_DATABASE_PATH="$MIGRATE_SQLITE_PATH" npm run migrate:sqlite-to-mongo
+  fi
   npm run build
   if [[ "$RUN_SEED" == "1" ]]; then
     echo "    seeding database (destructive)"

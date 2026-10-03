@@ -1,7 +1,7 @@
 /**
  * PM2 process definitions for the Ayla Musk VPS deployment.
  *
- * Runtime values (JWT secret, public host, DB path) are NOT hard-coded here.
+ * Runtime values (JWT secret, public host, MongoDB URL) are NOT hard-coded here.
  * They are read from the shell environment that `pm2 start` inherits, which
  * deploy/setup.sh and deploy/deploy.sh populate from /etc/aylamusk.env.
  *
@@ -23,7 +23,7 @@ module.exports = {
       env: {
         NODE_ENV: "production",
         PORT: process.env.API_PORT || "4000",
-        DATABASE_URL: process.env.DATABASE_URL || "file:./prisma/prod.db",
+        DATABASE_URL: process.env.DATABASE_URL,
         JWT_SECRET: process.env.JWT_SECRET,
         CLIENT_ORIGIN: process.env.PUBLIC_ORIGIN,
         // Cloudinary — signed browser uploads for product/category images.

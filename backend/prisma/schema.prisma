@@ -3,11 +3,12 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-  id            String         @id @default(cuid())
+  id            String         @id @default(cuid()) @map("_id")
   email         String         @unique
   passwordHash  String
   name          String
@@ -21,7 +22,7 @@ model User {
 }
 
 model Address {
-  id        String  @id @default(cuid())
+  id        String  @id @default(cuid()) @map("_id")
   userId    String
   user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   fullName  String
@@ -36,7 +37,7 @@ model Address {
 }
 
 model Category {
-  slug        String    @id
+  slug        String    @id @map("_id")
   name        String
   description String
   image       String
@@ -44,7 +45,7 @@ model Category {
 }
 
 model Product {
-  id               String    @id @default(cuid())
+  id               String    @id @default(cuid()) @map("_id")
   slug             String    @unique
   name             String
   brandLine        String?
@@ -100,7 +101,7 @@ model Product {
 }
 
 model ProductVariant {
-  id             String  @id @default(cuid())
+  id             String  @id @default(cuid()) @map("_id")
   productId      String
   product        Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   // Free-form variant label (e.g. "Power -2.00", "90-Pack") used in place of
@@ -117,7 +118,7 @@ model ProductVariant {
 }
 
 model Review {
-  id        String   @id @default(cuid())
+  id        String   @id @default(cuid()) @map("_id")
   productId String
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   userId    String?
@@ -131,7 +132,7 @@ model Review {
 }
 
 model CartItem {
-  id        String         @id @default(cuid())
+  id        String         @id @default(cuid()) @map("_id")
   userId    String
   user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   productId String
@@ -145,7 +146,7 @@ model CartItem {
 }
 
 model WishlistItem {
-  id        String   @id @default(cuid())
+  id        String   @id @default(cuid()) @map("_id")
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   productId String
@@ -156,7 +157,7 @@ model WishlistItem {
 }
 
 model Order {
-  id         String   @id @default(cuid())
+  id         String   @id @default(cuid()) @map("_id")
   userId     String?
   user       User?    @relation(fields: [userId], references: [id])
   status     String   @default("processing") // processing | shipped | delivered
@@ -180,7 +181,7 @@ model Order {
 }
 
 model OrderItem {
-  id          String         @id @default(cuid())
+  id          String         @id @default(cuid()) @map("_id")
   orderId     String
   order       Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
   productId   String
@@ -197,7 +198,7 @@ model OrderItem {
 }
 
 model Coupon {
-  code       String  @id
+  code       String  @id @map("_id")
   label      String
   percentOff Int
   active     Boolean @default(true)

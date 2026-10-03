@@ -1,123 +1,92 @@
-# Deploying Ayla Musk to the Hostinger VPS
+# Deploying Ayla Musk with MongoDB
 
-**Target:** VPS `srv1598629.hstgr.cloud` (`187.77.67.77`), Ubuntu 24.04, KVM 1.
+The production stack is Next.js, Express, Prisma, and **MongoDB Atlas**. The
+app runs on the Hostinger VPS through PM2, with nginx routing `/` to the web app
+and `/api` to the API.
 
+MongoDB Atlas is the recommended database host. The app uses Prisma
+transactions when placing an order, so the database must be a MongoDB replica
+set; Atlas provides that by default.
+
+## 1. Create the MongoDB database
+
+In MongoDB Atlas, create a cluster and a database user with read/write access
+to the `aylamusk` database. Add the Hostinger VPS public IP to Atlas Network
+Access, then copy its driver connection string. Its shape is:
+
+```text
+mongodb+srv://USERNAME:PASSWORD@CLUSTER.mongodb.net/aylamusk?retryWrites=true&w=majority
 ```
-              nginx :80
-        ┌────────┴─────────┐
-   /  → │ Next.js :3000    │  pm2: aylamusk-web
- /api → │ Express :4000    │  pm2: aylamusk-api  ── Prisma ── SQLite (backend/prisma/prod.db)
-        └──────────────────┘
-```
 
-Both processes run under **pm2** (auto-restart, boots on reboot). The DB is a
-SQLite file on disk — no separate database server. Migrate to Postgres later by
-swapping the Prisma datasource; nothing else in this setup changes.
+Use a URL-encoded password: for example, replace `@` with `%40` and `#` with
+`%23`. Never commit this value to Git.
 
----
+## 2. Move an existing VPS from SQLite to MongoDB
 
-## 1. Push the deploy tooling
-
-From your machine (this repo already has `origin` =
-`github.com/baramhana10/ayla-musk`):
+First push this version of the project to the repository used by the VPS. Then
+open the Hostinger VPS Browser Terminal (or SSH) and run the following as root.
+This briefly stops API writes so the data copy is consistent.
 
 ```bash
-git add deploy DEPLOY.md backend/.env.production.example frontend/.env.production.example backend/prisma/seed.ts
-git commit -m "Add VPS deploy tooling"
-git push origin main
+pm2 stop aylamusk-api
+cp /var/www/aylamusk/backend/prisma/prod.db /root/aylamusk-sqlite-before-mongo.db
+nano /etc/aylamusk.env
 ```
 
-The VPS pulls the code straight from GitHub, so the push is what "ships" it.
+In that file, replace its `DATABASE_URL` line with the Atlas URL, wrapped in
+single quotes:
 
-## 2. Open a shell on the VPS
+```bash
+DATABASE_URL='mongodb+srv://USERNAME:PASSWORD@CLUSTER.mongodb.net/aylamusk?retryWrites=true&w=majority'
+```
 
-hPanel → VPS → **Browser terminal** (or SSH if you have a key:
-`ssh root@187.77.67.77`). This sandbox can't reach the box, so you run these.
+Then perform the one-time migration and deployment:
 
-## 3. First-time provision (one command)
+```bash
+MIGRATE_SQLITE_PATH=/root/aylamusk-sqlite-before-mongo.db bash /var/www/aylamusk/deploy/deploy.sh
+```
+
+The deploy script pulls the latest code, creates MongoDB collections with
+`prisma db push`, copies every SQLite record while preserving IDs and
+relationships, builds both apps, and starts PM2 again. It stops before PM2 is
+reloaded if the transfer fails. The SQLite backup in `/root` is left intact.
+
+Confirm the result:
+
+```bash
+pm2 status
+pm2 logs aylamusk-api --lines 50
+curl -fsS http://127.0.0.1:4000/health
+```
+
+Do **not** use `RUN_SEED=1` during this migration: seeding intentionally wipes
+the MongoDB target.
+
+## 3. Deploy to a fresh Hostinger VPS
+
+Run the provisioner with the Atlas URL supplied only to the shell:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/baramhana10/ayla-musk/main/deploy/setup.sh -o /tmp/setup.sh
-PUBLIC_HOST=srv1598629.hstgr.cloud bash /tmp/setup.sh
+DATABASE_URL='mongodb+srv://USERNAME:PASSWORD@CLUSTER.mongodb.net/aylamusk?retryWrites=true&w=majority' PUBLIC_HOST=your-domain.com bash /tmp/setup.sh
 ```
 
-This installs Node 22, pm2, nginx; clones to `/var/www/aylamusk`; builds both
-apps; runs DB migrations; **seeds** the catalog + one admin user; wires up nginx
-and the firewall; and enables pm2 on boot.
-
-When it finishes it prints the site URL and the generated **admin email +
-password** (also saved in `/etc/aylamusk.env`).
-
-Visit: `http://srv1598629.hstgr.cloud` — API health at `/health`.
-
-## 4. Redeploy after any future `git push`
+The first deployment creates an empty database and seeds the configured admin
+account. For future releases, push the code and run:
 
 ```bash
 bash /var/www/aylamusk/deploy/deploy.sh
 ```
 
-Rebuilds and reloads with zero-ish downtime. It does **not** touch the database.
-To wipe and reseed: `RUN_SEED=1 bash /var/www/aylamusk/deploy/deploy.sh`.
-
-## 5. When you buy a domain
-
-1. Point an `A` record at `187.77.67.77` (Hostinger → Domains → DNS).
-2. On the VPS:
-   ```bash
-   apt-get install -y certbot python3-certbot-nginx
-   certbot --nginx -d yourdomain.com -d www.yourdomain.com
-   sed -i 's#^PUBLIC_HOST=.*#PUBLIC_HOST=yourdomain.com#; s#^PUBLIC_SCHEME=.*#PUBLIC_SCHEME=https#; s#^PUBLIC_ORIGIN=.*#PUBLIC_ORIGIN=https://yourdomain.com#' /etc/aylamusk.env
-   bash /var/www/aylamusk/deploy/deploy.sh   # rebuild so NEXT_PUBLIC_API_URL updates
-   ```
-
----
-
-## Image uploads (Cloudinary)
-
-Product and category photos are **not** stored on this VPS. The admin browser
-uploads each file straight to Cloudinary; the API only signs the request (the
-secret never leaves the box). Until it's configured, the admin image picker
-says "not configured" — everything else works.
-
-1. Create a free account at cloudinary.com. The dashboard shows **Cloud name**,
-   **API Key**, **API Secret**.
-2. On the VPS, put them in the env file:
-   ```bash
-   nano /etc/aylamusk.env
-   #   CLOUDINARY_CLOUD_NAME=your-cloud-name
-   #   CLOUDINARY_API_KEY=123456789012345
-   #   CLOUDINARY_API_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxx
-   ```
-3. Reload so pm2 picks up the new env:
-   ```bash
-   bash /var/www/aylamusk/deploy/deploy.sh
-   ```
-
-`res.cloudinary.com` is already whitelisted in `next.config.ts`. To move to a
-different account later, just edit `/etc/aylamusk.env` and re-run `deploy.sh` —
-no rebuild-for-domain caveat here, the cloud name is read at runtime.
-
----
-
 ## Operations
 
-| Task | Command (on VPS) |
-|---|---|
-| Status | `pm2 status` |
-| Logs | `pm2 logs aylamusk-api` / `pm2 logs aylamusk-web` |
-| Restart one | `pm2 restart aylamusk-web` |
-| Edit config | `nano /etc/aylamusk.env` then `deploy.sh` |
-| nginx logs | `tail -f /var/log/nginx/error.log` |
-| DB file | `/var/www/aylamusk/backend/prisma/prod.db` (back this up) |
+| Task | Command |
+| --- | --- |
+| App status | `pm2 status` |
+| API logs | `pm2 logs aylamusk-api` |
+| Reload after config change | `bash /var/www/aylamusk/deploy/deploy.sh` |
+| Edit secrets | `nano /etc/aylamusk.env` |
+| Check the API locally | `curl -fsS http://127.0.0.1:4000/health` |
 
-## Notes / gotchas
-
-- **`NEXT_PUBLIC_API_URL` is baked at build time.** Changing the public host
-  requires a rebuild (`deploy.sh` handles it).
-- **Seeding is destructive** — `prisma/seed.ts` deletes all rows first. `setup.sh`
-  only seeds on the first run.
-- Default seeded admin is `admin@aylamusk.com` / `admin123` unless you pass
-  `ADMIN_EMAIL` / `ADMIN_PASSWORD` to `setup.sh` (recommended).
-- SQLite means a single VPS only — don't scale `aylamusk-api` past 1 instance.
-- Back up `prod.db` before each redeploy if data matters:
-  `cp backend/prisma/prod.db ~/prod.db.$(date +%F)`.
+Back up the database using Atlas backups/snapshots, rather than copying a
+database file from the VPS. Keep `/etc/aylamusk.env` readable only by root.

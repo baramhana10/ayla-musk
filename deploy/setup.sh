@@ -4,7 +4,7 @@
 # Safe to re-run — every step is idempotent.
 #
 #   Frontend : Next.js  (next start)  -> 127.0.0.1:3000   [pm2: aylamusk-web]
-#   Backend  : Express + Prisma/SQLite -> 127.0.0.1:4000  [pm2: aylamusk-api]
+#   Backend  : Express + Prisma/MongoDB -> 127.0.0.1:4000  [pm2: aylamusk-api]
 #   Edge     : nginx :80  ->  / to web, /api + /health to api
 #
 # Usage (as root):
@@ -20,6 +20,7 @@
 #   JWT_SECRET      auth signing secret                  (default: generated once)
 #   ADMIN_EMAIL     seeded admin login                   (default: admin@aylamusk.com)
 #   ADMIN_PASSWORD  seeded admin password                (default: generated once)
+#   DATABASE_URL    MongoDB Atlas connection string       (required)
 #   RUN_SEED        1 to (re)seed the DB this run        (default: 1 only on first setup)
 set -euo pipefail
 
@@ -57,6 +58,12 @@ JWT_SECRET="${JWT_SECRET:-$(openssl rand -hex 48)}"
 ADMIN_EMAIL="${ADMIN_EMAIL:-admin@aylamusk.com}"
 ADMIN_PASSWORD="${ADMIN_PASSWORD:-$(openssl rand -base64 12)}"
 RUN_SEED="${RUN_SEED:-$FIRST_RUN}"
+DATABASE_URL="${DATABASE_URL:-}"
+
+if [[ -z "$DATABASE_URL" ]]; then
+  echo "DATABASE_URL is required. Pass your MongoDB Atlas connection string when running setup.sh." >&2
+  exit 1
+fi
 
 # Cloudinary — product/category image uploads. Blank by default; fill these in
 # (here or by passing them to this script) and re-run deploy/deploy.sh. Until
@@ -73,7 +80,7 @@ PUBLIC_SCHEME=${PUBLIC_SCHEME}
 PUBLIC_ORIGIN=${PUBLIC_ORIGIN}
 API_PORT=4000
 WEB_PORT=3000
-DATABASE_URL=file:./prisma/prod.db
+DATABASE_URL='${DATABASE_URL}'
 JWT_SECRET=${JWT_SECRET}
 ADMIN_EMAIL=${ADMIN_EMAIL}
 ADMIN_PASSWORD=${ADMIN_PASSWORD}
