@@ -29,8 +29,8 @@ export default function CartPage() {
 
   const coupon = couponCode ? COUPONS[couponCode] : null;
   const discount = coupon ? Math.round(subtotal * (coupon.percentOff / 100)) : 0;
-  const shipping = subtotal >= 7500 || subtotal === 0 ? 0 : 650;
-  const total = subtotal - discount + shipping;
+  // Delivery price is calculated from the selected city at checkout.
+  const total = subtotal - discount;
 
   function handleApplyCoupon(e: React.FormEvent) {
     e.preventDefault();
@@ -135,7 +135,7 @@ export default function CartPage() {
             )}
             <div className="flex justify-between text-charcoal/60">
               <span>{t("cart.shipping")}</span>
-              <span>{shipping === 0 ? t("common.free") : formatPrice(shipping)}</span>
+              <span>{t("checkout.selectCity")}</span>
             </div>
             <div className="flex justify-between border-t border-charcoal/10 pt-3 text-base font-medium text-charcoal">
               <span>{t("cart.total")}</span>

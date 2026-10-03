@@ -4,6 +4,7 @@ import { prisma } from "../lib/prisma";
 import { asyncHandler } from "../utils/asyncHandler";
 import { attachUser, requireAdmin } from "../middleware/auth";
 import { badRequest, notFound } from "../utils/ApiError";
+import { DELIVERY_CITIES, getShippingCost } from "../lib/delivery";
 
 const router = Router();
 
@@ -51,7 +52,7 @@ const createOrderSchema = z.object({
   shippingAddress: z.object({
     fullName: z.string().min(2),
     phone: z.string().min(7),
-    city: z.string().min(1),
+    city: z.enum(DELIVERY_CITIES, { message: "Select a delivery city" }),
     address: z.string().min(4),
   }),
 });
@@ -90,7 +91,8 @@ router.post(
       }
     }
 
-    const shipping = subtotal >= 7500 ? 0 : 650;
+    // Prices are stored as agorot: West Bank = 20 NIS; Jerusalem / 1948 areas = 50 NIS.
+    const shipping = getShippingCost(body.shippingAddress.city);
     const total = subtotal - discount + shipping;
 
     const order = await prisma.$transaction(async (tx) => {

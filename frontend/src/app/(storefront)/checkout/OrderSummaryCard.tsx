@@ -15,7 +15,7 @@ export default function OrderSummaryCard({
   lines: ReturnType<typeof useCartDetails>["lines"];
   subtotal: number;
   discount: number;
-  shipping: number;
+  shipping: number | null;
   total: number;
 }) {
   const t = useT();
@@ -55,7 +55,7 @@ export default function OrderSummaryCard({
         )}
         <div className="flex justify-between text-charcoal/60">
           <span>{t("cart.shipping")}</span>
-          <span>{shipping === 0 ? t("common.free") : formatPrice(shipping)}</span>
+          <span>{shipping === null ? t("checkout.selectCity") : formatPrice(shipping)}</span>
         </div>
         <div className="flex justify-between border-t border-charcoal/10 pt-3 text-base font-medium text-charcoal">
           <span>{t("cart.total")}</span>
