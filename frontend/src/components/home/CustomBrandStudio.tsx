@@ -19,7 +19,7 @@ export default function CustomBrandStudio() {
   const palette = palettes[paletteIndex];
   const brandName = name.trim() || "اسم علامتك";
   const enquiry = `مرحباً أيلا مَسك، أرغب في تصميم علامتي الخاصة.\nاسم العلامة: ${name.trim() || "لم أحدده بعد"}\nالألوان المفضلة: ${palette.name}\nفكرتي ومتطلباتي: `;
-  const whatsappHref = `https://wa.me/972598515777?text=${encodeURIComponent(enquiry)}`;
+  const whatsappHref = `https://wa.me/971529875533?text=${encodeURIComponent(enquiry)}`;
 
   return (
     <section dir="rtl" aria-labelledby="custom-brand-title" className="relative overflow-hidden bg-[var(--hw-cream)] py-20 text-[var(--hw-ink)] sm:py-28">
