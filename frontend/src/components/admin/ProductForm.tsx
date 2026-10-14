@@ -93,8 +93,8 @@ export default function ProductForm({ product }: { product?: Product }) {
     }
 
     const payload = {
-      name,
-      slug: product?.slug ?? slugify(name),
+      name: name.trim(),
+      slug: product?.slug ?? (slugify(name) || `product-${crypto.randomUUID()}`),
       brandLine: brandLine || undefined,
       department,
       category: department === "lenses" ? null : category || null,

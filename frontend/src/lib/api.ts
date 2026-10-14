@@ -26,7 +26,17 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
 
   const data = await res.json().catch(() => ({}));
   if (!res.ok) {
-    throw new ApiClientError(res.status, data.error || "Something went wrong. Please try again.");
+    const details = Array.isArray(data.details)
+      ? data.details
+          .filter((detail: unknown): detail is { path?: string; message: string } =>
+            typeof detail === "object" && detail !== null &&
+            "message" in detail && typeof detail.message === "string")
+          .map((detail: { path?: string; message: string }) =>
+            detail.path ? `${detail.path}: ${detail.message}` : detail.message)
+          .join("; ")
+      : "";
+    const message = typeof data.error === "string" ? data.error : "Something went wrong. Please try again.";
+    throw new ApiClientError(res.status, details ? `${message}: ${details}` : message);
   }
   return data as T;
 }

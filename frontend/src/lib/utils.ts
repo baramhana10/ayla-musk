@@ -23,8 +23,9 @@ export function variantLabel(v: { label?: string; sizeMl?: number }, fallback: s
 
 export function slugify(value: string) {
   return value
+    .normalize("NFC")
     .toLowerCase()
     .trim()
-    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/[^\p{L}\p{M}\p{N}]+/gu, "-")
     .replace(/(^-|-$)+/g, "");
 }
