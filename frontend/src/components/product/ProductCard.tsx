@@ -90,18 +90,19 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
             />
           )}
 
-          {/* Black Friday corner ribbon — a diagonal foil banner clipped by
-              the card's own rounded corner, the way a sale sticker wraps a
-              physical box. Sits at z-10 so the index mark (z-20, later in
-              the DOM) stamps on top of it rather than disappearing under it. */}
-          <div
-            aria-hidden="true"
-            className="absolute -start-14 -top-3 z-10 w-48 -rotate-45 bg-gradient-to-r from-[#8a6a2e] via-champagne-light to-[#8a6a2e] py-1.5 text-center shadow-[0_2px_10px_rgba(0,0,0,0.35)] rtl:rotate-45"
-          >
-            <span className="flex items-center justify-center gap-1 text-[9px] font-bold uppercase tracking-[0.1em] text-noir">
-              <Sparkles size={10} className="shrink-0" />
-              Black Friday
-            </span>
+          {/* Black Friday corner ribbon. A dedicated small clipping box
+              anchored exactly at the corner — rather than relying on the
+              card's own overflow-hidden — keeps the diagonal band crisp and
+              fully visible at any card size, the way a foil corner sticker
+              wraps a physical box. Sits at z-10 so the index mark (z-20,
+              later in the DOM) stamps on top of it rather than vanishing. */}
+          <div aria-hidden="true" className="pointer-events-none absolute -start-1 -top-1 z-10 h-28 w-28 overflow-hidden">
+            <div className="absolute -start-[42px] top-[26px] w-[165px] -rotate-45 border-y border-noir/15 bg-gradient-to-r from-[#8a6a2e] via-champagne-light to-[#8a6a2e] py-[5px] text-center shadow-[0_3px_10px_rgba(0,0,0,0.4)] rtl:rotate-45">
+              <span className="flex items-center justify-center gap-1 text-[9.5px] font-bold uppercase tracking-[0.06em] text-noir">
+                <Sparkles size={11} className="shrink-0" />
+                Black Friday
+              </span>
+            </div>
           </div>
 
           {/* Index — the only mark visible at rest. */}

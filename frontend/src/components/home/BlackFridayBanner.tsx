@@ -3,8 +3,17 @@
 import { useRef } from "react";
 import Link from "next/link";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
-import { ArrowRight } from "lucide-react";
-import { useT } from "@/store/locale";
+import { ArrowRight, Sparkles } from "lucide-react";
+import { useT, useLocale } from "@/store/locale";
+
+/** Ambient sparkle field — ornamental only, so it's skipped entirely under
+ *  reduced motion rather than frozen mid-float. */
+const AMBIENT_SPARKLES = [
+  { top: "18%", start: "10%", size: 14, duration: 7, delay: 0 },
+  { top: "68%", start: "7%", size: 10, duration: 9, delay: 1.2 },
+  { top: "22%", start: "90%", size: 12, duration: 8, delay: 0.6 },
+  { top: "72%", start: "92%", size: 16, duration: 10, delay: 1.8 },
+];
 
 const easeLuxe = [0.22, 1, 0.36, 1] as const;
 
@@ -20,6 +29,7 @@ export default function BlackFridayBanner() {
   const ref = useRef<HTMLElement>(null);
   const prefersReducedMotion = useReducedMotion();
   const t = useT();
+  const isArabic = useLocale() === "ar";
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const glowScale = useTransform(scrollYProgress, [0, 0.5, 1], [0.9, 1.15, 0.9]);
 
@@ -59,17 +69,39 @@ export default function BlackFridayBanner() {
         </div>
       </div>
 
+      {/* Ambient sparkle field — a few embers drifting around the plaque,
+          the way candlelight moves in a room rather than a static poster. */}
+      {!prefersReducedMotion &&
+        AMBIENT_SPARKLES.map((s, i) => (
+          <Sparkles
+            key={i}
+            aria-hidden="true"
+            size={s.size}
+            className={`pointer-events-none absolute -z-10 text-champagne-light/30 ${i % 2 === 0 ? "animate-float" : "animate-float-slow"}`}
+            style={{ top: s.top, [isArabic ? "right" : "left"]: s.start, animationDelay: `${s.delay}s` }}
+          />
+        ))}
+
       <div className="container-luxe relative text-center">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-90px" }}
           transition={{ duration: 0.9, ease: easeLuxe }}
+          className="relative mx-auto max-w-3xl px-6 py-10 sm:px-14 sm:py-14"
         >
+          {/* A thin gold frame, broken at the corners like an exhibition
+              invitation — the detail that makes this read as a staged event
+              rather than another content section. */}
+          <span className="absolute -start-px -top-px h-8 w-8 border-s border-t border-champagne/55 sm:h-10 sm:w-10" />
+          <span className="absolute -end-px -top-px h-8 w-8 border-e border-t border-champagne/55 sm:h-10 sm:w-10" />
+          <span className="absolute -start-px -bottom-px h-8 w-8 border-s border-b border-champagne/55 sm:h-10 sm:w-10" />
+          <span className="absolute -end-px -bottom-px h-8 w-8 border-e border-b border-champagne/55 sm:h-10 sm:w-10" />
+
           {/* "Live" pill — the one urgency cue that isn't a countdown or a
               percentage, just a pulsing dot the way a luxury boutique would
               light a single window to say "we're open". */}
-          <span className="mx-auto mb-6 flex w-fit items-center gap-2 rounded-full border border-champagne/35 bg-champagne/[0.06] px-4 py-1.5">
+          <span className="mx-auto mb-7 flex w-fit items-center gap-2 rounded-full border border-champagne/35 bg-champagne/[0.06] px-4 py-1.5">
             <span className="relative flex h-1.5 w-1.5">
               <span className="animate-glow-pulse absolute inline-flex h-full w-full rounded-full bg-champagne-light" />
               <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-champagne-light" />
@@ -77,7 +109,7 @@ export default function BlackFridayBanner() {
             <span className="text-[9.5px] uppercase tracking-[0.3em] text-champagne-light">{t("blackFriday.live")}</span>
           </span>
 
-          <span className="text-[10px] uppercase tracking-[0.4em] text-champagne-light/70">{t("blackFriday.eyebrow")}</span>
+          <span className="text-[10px] uppercase tracking-[0.45em] text-champagne-light/70">{t("blackFriday.eyebrow")}</span>
 
           {/* The Arabic line is kept untranslated on purpose in both locales
               — a calligraphic flourish the English layout wraps around,
@@ -87,16 +119,16 @@ export default function BlackFridayBanner() {
             {t("blackFriday.arabicLine")}
           </p>
 
-          <h2 className="mx-auto mt-9 max-w-2xl font-display text-[2.6rem] leading-[1.05] sm:text-[3.6rem] lg:text-[4.4rem]">
+          <h2 className="mx-auto mt-9 max-w-2xl font-display text-[2.8rem] leading-[1.03] sm:text-[4rem] lg:text-[5rem]">
             {t("blackFriday.headlineA")}{" "}
             <em className="text-gold not-italic">{t("blackFriday.headlineEm")}</em> {t("blackFriday.headlineB")}
           </h2>
 
-          <p className="mx-auto mt-6 max-w-md text-[15px] leading-[1.8] text-ivory/55">{t("blackFriday.paragraph")}</p>
+          <p className="mx-auto mt-7 max-w-md text-[15px] leading-[1.8] text-ivory/55">{t("blackFriday.paragraph")}</p>
 
           <Link
             href="/shop"
-            className="group relative mt-11 inline-flex h-14 items-center justify-center overflow-hidden rounded-full border border-champagne/50 px-10 text-[12px] uppercase tracking-[0.2em] text-champagne-light transition-colors duration-500 hover:text-noir"
+            className="group relative mt-12 inline-flex h-14 items-center justify-center overflow-hidden rounded-full border border-champagne/50 px-10 text-[12px] uppercase tracking-[0.2em] text-champagne-light transition-colors duration-500 hover:text-noir"
           >
             <span className="absolute inset-0 -z-10 translate-y-full bg-gradient-to-t from-champagne to-champagne-light transition-transform duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
             <span className="relative flex items-center gap-3">

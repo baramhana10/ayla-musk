@@ -7,7 +7,7 @@ import {
   useReducedMotion,
   type Variants,
 } from "framer-motion";
-import { ArrowRight, ArrowLeft } from "lucide-react";
+import { ArrowRight, ArrowLeft, Sparkles } from "lucide-react";
 import { useUIStore } from "@/store/ui";
 import { useLocale, useT } from "@/store/locale";
 
@@ -209,6 +209,25 @@ export default function Hero() {
                 className="object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[var(--hw-espresso)]/55 via-transparent to-[var(--hw-espresso)]/10" />
+
+              {/* Black Friday ribbon — the first thing anyone sees on the
+                  homepage, before any scroll. Same foil-corner language as
+                  the shop grid, so the cue reads as one consistent campaign
+                  rather than a sticker bolted on afterward. */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: shown ? 1 : 0 }}
+                transition={{ delay: 0.5, duration: 0.6 }}
+                aria-hidden="true"
+                className="absolute -start-1 -top-1 z-10 h-32 w-32 overflow-hidden"
+              >
+                <div className="absolute -start-[46px] top-[30px] w-[185px] -rotate-45 border-y border-noir/15 bg-gradient-to-r from-[#8a6a2e] via-champagne-light to-[#8a6a2e] py-[6px] text-center shadow-[0_3px_12px_rgba(0,0,0,0.45)] rtl:rotate-45">
+                  <span className="flex items-center justify-center gap-1.5 text-[10.5px] font-bold uppercase tracking-[0.08em] text-noir">
+                    <Sparkles size={12} className="shrink-0" />
+                    Black Friday
+                  </span>
+                </div>
+              </motion.div>
 
               {/* One-shot foil sweep as the object settles. */}
               {!prefersReducedMotion && (
