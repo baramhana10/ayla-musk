@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "@/components/ui/OptimizedImage";
 import { motion } from "framer-motion";
-import { Heart, Plus } from "lucide-react";
+import { Heart, Plus, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import type { Product } from "@/lib/types";
 import { minPrice, maxCompareAt } from "@/lib/mock-data";
@@ -90,15 +90,26 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
             />
           )}
 
+          {/* Black Friday corner ribbon — a diagonal foil banner clipped by
+              the card's own rounded corner, the way a sale sticker wraps a
+              physical box. Sits at z-10 so the index mark (z-20, later in
+              the DOM) stamps on top of it rather than disappearing under it. */}
+          <div
+            aria-hidden="true"
+            className="absolute -start-14 -top-3 z-10 w-48 -rotate-45 bg-gradient-to-r from-[#8a6a2e] via-champagne-light to-[#8a6a2e] py-1.5 text-center shadow-[0_2px_10px_rgba(0,0,0,0.35)] rtl:rotate-45"
+          >
+            <span className="flex items-center justify-center gap-1 text-[9px] font-bold uppercase tracking-[0.1em] text-noir">
+              <Sparkles size={10} className="shrink-0" />
+              Black Friday
+            </span>
+          </div>
+
           {/* Index — the only mark visible at rest. */}
-          <span className="absolute start-4 top-4 z-10 font-display text-[11px] tracking-[0.2em] text-ivory mix-blend-difference">
+          <span className="absolute start-4 top-4 z-20 font-display text-[11px] tracking-[0.2em] text-ivory mix-blend-difference">
             {String(index + 1).padStart(2, "0")}
           </span>
 
           <div className="absolute end-4 top-4 z-10 flex flex-col items-end gap-1.5">
-            <span className="border border-champagne/60 bg-noir/80 px-2.5 py-1 text-[8.5px] uppercase tracking-[0.18em] text-champagne-light backdrop-blur">
-              {t("blackFriday.badge")}
-            </span>
             {product.bestseller && (
               <span className="bg-noir/70 px-2.5 py-1 text-[8.5px] uppercase tracking-[0.18em] text-champagne-light backdrop-blur">
                 {t("product.bestseller")}

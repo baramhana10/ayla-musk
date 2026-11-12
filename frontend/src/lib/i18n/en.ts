@@ -708,7 +708,7 @@ export const en = {
   blackFriday: {
     marquee: "BLACK FRIDAY",
     eyebrow: "The Black Edit",
-    arabicLine: "الجمعة السوداء في عالم عايلة مَسك… حيث يتوهّج السواد بالذهب.",
+    arabicLine: "Black Friday في عالم عايلة مَسك… حيث يتوهّج السواد بالذهب.",
     headlineA: "Black,",
     headlineEm: "gilded",
     headlineB: "in gold.",
@@ -716,6 +716,10 @@ export const en = {
     cta: "Enter the Black Edit",
     stripNote: "The collection, reimagined in black and gold — for one weekend only.",
     badge: "Black Friday",
+    live: "Live now",
+    barM1: "Black Friday is here",
+    barM2: "The Black Edit — the full collection, in black and gold",
+    barM3: "Shop the Black Edit",
   },
 };
 

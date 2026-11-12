@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import Link from "next/link";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { ArrowRight } from "lucide-react";
 import { useT } from "@/store/locale";
 
 const easeLuxe = [0.22, 1, 0.36, 1] as const;
@@ -65,6 +66,17 @@ export default function BlackFridayBanner() {
           viewport={{ once: true, margin: "-90px" }}
           transition={{ duration: 0.9, ease: easeLuxe }}
         >
+          {/* "Live" pill — the one urgency cue that isn't a countdown or a
+              percentage, just a pulsing dot the way a luxury boutique would
+              light a single window to say "we're open". */}
+          <span className="mx-auto mb-6 flex w-fit items-center gap-2 rounded-full border border-champagne/35 bg-champagne/[0.06] px-4 py-1.5">
+            <span className="relative flex h-1.5 w-1.5">
+              <span className="animate-glow-pulse absolute inline-flex h-full w-full rounded-full bg-champagne-light" />
+              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-champagne-light" />
+            </span>
+            <span className="text-[9.5px] uppercase tracking-[0.3em] text-champagne-light">{t("blackFriday.live")}</span>
+          </span>
+
           <span className="text-[10px] uppercase tracking-[0.4em] text-champagne-light/70">{t("blackFriday.eyebrow")}</span>
 
           {/* The Arabic line is kept untranslated on purpose in both locales
@@ -87,7 +99,10 @@ export default function BlackFridayBanner() {
             className="group relative mt-11 inline-flex h-14 items-center justify-center overflow-hidden rounded-full border border-champagne/50 px-10 text-[12px] uppercase tracking-[0.2em] text-champagne-light transition-colors duration-500 hover:text-noir"
           >
             <span className="absolute inset-0 -z-10 translate-y-full bg-gradient-to-t from-champagne to-champagne-light transition-transform duration-[600ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
-            <span className="relative">{t("blackFriday.cta")}</span>
+            <span className="relative flex items-center gap-3">
+              {t("blackFriday.cta")}
+              <ArrowRight size={14} className="transition-transform duration-500 group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" />
+            </span>
           </Link>
         </motion.div>
       </div>
