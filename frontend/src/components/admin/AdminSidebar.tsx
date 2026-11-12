@@ -9,18 +9,20 @@ import {
   ShoppingCart,
   Star,
   Ticket,
+  Mail,
   ExternalLink,
   LogOut,
 } from "lucide-react";
 import { useAdminAuthStore } from "@/store/adminAuth";
 import { cn } from "@/lib/utils";
-import { useT } from "@/store/locale";
+import { useT, useLocale } from "@/store/locale";
 import LanguageToggle from "@/components/layout/LanguageToggle";
 
 export default function AdminSidebar() {
   const pathname = usePathname();
   const logout = useAdminAuthStore((s) => s.logout);
   const t = useT();
+  const ar = useLocale() === "ar";
 
   const links = [
     { href: "/admin", label: t("admin.nav.dashboard"), icon: LayoutDashboard, exact: true },
@@ -29,6 +31,7 @@ export default function AdminSidebar() {
     { href: "/admin/orders", label: t("admin.nav.orders"), icon: ShoppingCart },
     { href: "/admin/reviews", label: t("admin.nav.reviews"), icon: Star },
     { href: "/admin/coupons", label: t("admin.nav.coupons"), icon: Ticket },
+    { href: "/admin/communications", label: ar ? "الرسائل والاشتراكات" : "Messages & subscribers", icon: Mail },
   ];
 
   return (

@@ -141,7 +141,7 @@ export interface CouponDto { code: string; label: string; percentOff: number; ac
 
 export const couponsApi = {
   list: () => request<{ coupons: CouponDto[] }>("/api/coupons"),
-  validate: (code: string) => request<{ valid: boolean; coupon?: CouponDto }>(`/api/coupons/validate/${code}`),
+  validate: (code: string) => request<{ valid: boolean; coupon?: CouponDto }>(`/api/coupons/validate/${encodeURIComponent(code)}`),
   upsert: (payload: CouponDto) => request<{ coupon: CouponDto }>("/api/coupons", { method: "POST", body: JSON.stringify(payload) }),
   remove: (code: string) => request<void>(`/api/coupons/${code}`, { method: "DELETE" }),
 };
@@ -159,20 +159,33 @@ export const adminApi = {
   stats: () => request<AdminStatsDto>("/api/admin/stats"),
 };
 
-/** Upload one product or category image into MongoDB GridFS. */
+export interface ContactMessageDto {
+  id: string; name: string; email: string; subject: string; message: string; read: boolean; createdAt: string;
+}
+export interface NewsletterSubscriberDto { email: string; active: boolean; createdAt: string }
+export const communicationsApi = {
+  contact: (payload: { name: string; email: string; subject: string; message: string }) =>
+    request<{ received: boolean }>("/api/contact", { method: "POST", body: JSON.stringify(payload) }),
+  messages: () => request<{ messages: ContactMessageDto[] }>("/api/contact"),
+  markRead: (id: string, read: boolean) => request<{ message: ContactMessageDto }>(`/api/contact/${encodeURIComponent(id)}`, { method: "PATCH", body: JSON.stringify({ read }) }),
+  subscribe: (email: string) => request<{ received: boolean; unsubscribeToken?: string }>("/api/newsletter", { method: "POST", body: JSON.stringify({ email, consent: true }) }),
+  unsubscribe: (token: string) => request<{ unsubscribed: boolean }>("/api/newsletter/unsubscribe", { method: "POST", body: JSON.stringify({ token }) }),
+  subscribers: () => request<{ subscribers: NewsletterSubscriberDto[] }>("/api/newsletter"),
+  setSubscriberActive: (email: string, active: boolean) => request<{ subscriber: NewsletterSubscriberDto }>(`/api/newsletter/${encodeURIComponent(email)}`, { method: "PATCH", body: JSON.stringify({ active }) }),
+};
+
+/** Upload directly to Cloudinary with a short-lived, admin-only signature. */
 export async function uploadImage(file: File): Promise<string> {
-  const res = await fetch(`${API_URL}/api/uploads`, {
-    method: "POST",
-    credentials: "include",
-    headers: {
-      "Content-Type": file.type,
-      "X-File-Name": file.name,
-    },
-    body: file,
-  });
+  const signed = await request<{ uploadUrl: string; apiKey: string; params: Record<string, string>; signature: string }>("/api/uploads/signature", { method: "POST" });
+  const form = new FormData();
+  form.append("file", file);
+  form.append("api_key", signed.apiKey);
+  form.append("signature", signed.signature);
+  for (const [key, value] of Object.entries(signed.params)) form.append(key, value);
+  const res = await fetch(signed.uploadUrl, { method: "POST", body: form });
   const data = await res.json().catch(() => ({}));
-  if (!res.ok || !data.url) {
-    throw new ApiClientError(res.status || 500, data?.error?.message || "Image upload failed.");
+  if (!res.ok || typeof data.secure_url !== "string" || !data.secure_url.startsWith("https://res.cloudinary.com/")) {
+    throw new ApiClientError(res.status || 500, typeof data.error === "string" ? data.error : "Image upload failed.");
   }
-  return data.url as string;
+  return data.secure_url;
 }

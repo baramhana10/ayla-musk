@@ -269,8 +269,20 @@ export default function ProductForm({ product }: { product?: Product }) {
               ) : (
                 <Input label={t("admin.products.form.sizeMl")} type="number" value={v.sizeMl ?? ""} onChange={(e) => updateVariant(v.id, { sizeMl: e.target.value ? Number(e.target.value) : undefined })} />
               )}
-              <Input label={t("admin.products.form.priceCents")} type="number" value={v.price} onChange={(e) => updateVariant(v.id, { price: Number(e.target.value) })} />
-              <Input label={t("admin.products.form.compareAt")} type="number" value={v.compareAtPrice ?? ""} onChange={(e) => updateVariant(v.id, { compareAtPrice: e.target.value ? Number(e.target.value) : undefined })} />
+              <Input
+                label={t("admin.products.form.priceCents")}
+                type="number"
+                step="0.01"
+                value={v.price / 100}
+                onChange={(e) => updateVariant(v.id, { price: Math.round(Number(e.target.value) * 100) })}
+              />
+              <Input
+                label={t("admin.products.form.compareAt")}
+                type="number"
+                step="0.01"
+                value={v.compareAtPrice != null ? v.compareAtPrice / 100 : ""}
+                onChange={(e) => updateVariant(v.id, { compareAtPrice: e.target.value ? Math.round(Number(e.target.value) * 100) : undefined })}
+              />
               <Input label={t("admin.products.form.stock")} type="number" value={v.stock} onChange={(e) => updateVariant(v.id, { stock: Number(e.target.value) })} />
               <button
                 type="button"

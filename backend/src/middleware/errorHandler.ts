@@ -9,6 +9,11 @@ export function notFoundHandler(req: Request, res: Response) {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function errorHandler(err: unknown, _req: Request, res: Response, _next: NextFunction) {
+  if (res.headersSent) return _next(err);
+  if (err instanceof Error && "type" in err) {
+    if (err.type === "entity.too.large") return res.status(413).json({ error: "The uploaded file or request is too large." });
+    if (err.type === "entity.parse.failed") return res.status(400).json({ error: "Invalid JSON request." });
+  }
   if (err instanceof ZodError) {
     return res.status(400).json({
       error: "Validation failed",

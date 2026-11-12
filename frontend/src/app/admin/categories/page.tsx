@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
+import Image from "@/components/ui/OptimizedImage";
 import { Plus, Trash2, Pencil } from "lucide-react";
 import { toast } from "sonner";
 import { categoriesApi, ApiClientError } from "@/lib/api";

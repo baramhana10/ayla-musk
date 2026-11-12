@@ -9,6 +9,7 @@ import { useProducts } from "@/lib/hooks";
 import type { Department } from "@/lib/types";
 import ProductCard from "@/components/product/ProductCard";
 import ProductCardSkeleton from "@/components/product/ProductCardSkeleton";
+import BlackFridayStrip from "@/components/shop/BlackFridayStrip";
 import FilterSidebar, { type ShopFilters, PRICE_CEILING } from "@/components/shop/FilterSidebar";
 import Select from "@/components/ui/Select";
 import Badge from "@/components/ui/Badge";
@@ -110,7 +111,9 @@ export default function ShopContent() {
   ];
 
   return (
-    <div className="container-luxe py-10 sm:py-14">
+    <>
+      <BlackFridayStrip />
+      <div className="container-luxe py-10 sm:py-14">
       <div className="mb-10 text-center">
         <span className="text-xs font-semibold uppercase tracking-[0.25em] text-deep-rose">{t("shop.eyebrow")}</span>
         <h1 className="mt-3 font-display text-4xl text-charcoal sm:text-5xl">
@@ -230,6 +233,7 @@ export default function ShopContent() {
           )}
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }

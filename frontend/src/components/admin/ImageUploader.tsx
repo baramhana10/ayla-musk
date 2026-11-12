@@ -7,9 +7,8 @@ import { uploadImage, ApiClientError } from "@/lib/api";
 import { useT } from "@/store/locale";
 
 /**
- * Admin image picker. Files are uploaded straight to Cloudinary (signed by our
- * backend) and only the resulting HTTPS URLs are kept in `value` — nothing is
- * stored on our own server. The first URL is treated as the primary photo.
+ * Admin image picker. Files upload directly to Cloudinary using an admin-only
+ * signature from the backend. Only CDN URLs are stored; the first is primary.
  *
  * A plain-text field is still offered for pasting an existing URL by hand.
  */
@@ -33,6 +32,10 @@ export default function ImageUploader({
       for (const file of Array.from(files)) {
         if (!file.type.startsWith("image/")) {
           toast.error(`${file.name}: ${t("admin.products.form.uploadNotImage")}`);
+          continue;
+        }
+        if (file.size > 10 * 1024 * 1024) {
+          toast.error(`${file.name}: ${t("admin.products.form.uploadTooLarge")}`);
           continue;
         }
         try {

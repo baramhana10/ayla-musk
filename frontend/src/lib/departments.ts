@@ -1,6 +1,5 @@
 import { Droplet, FlaskConical, Eye, type LucideIcon } from "lucide-react";
 import type { Department, ProductCategorySlug } from "./types";
-import { editorial } from "./images";
 
 /**
  * Single source of truth for the site's 3 departments. Every place that
@@ -29,7 +28,7 @@ export const DEPARTMENTS: DepartmentDef[] = [
     descriptionKey: "pillars.bodyCare.description",
     ctaKey: "pillars.bodyCare.cta",
     icon: Droplet,
-    image: "/products/body-butter-strawberry.jpg",
+    image: "https://res.cloudinary.com/drhwhjav/image/upload/v1791032109/aylamusk/81ed081a-0f14-4f15-aba4-67edfe738013.webp",
   },
   {
     slug: "perfumes",
@@ -38,7 +37,7 @@ export const DEPARTMENTS: DepartmentDef[] = [
     descriptionKey: "pillars.perfumes.description",
     ctaKey: "pillars.perfumes.cta",
     icon: FlaskConical,
-    image: "/products/musk-oil-trio.jpg",
+    image: "https://res.cloudinary.com/drhwhjav/image/upload/v1791032111/aylamusk/4efc7c8b-cba7-451e-b13a-80b3d0dbd6f7.webp",
   },
   {
     slug: "lenses",
@@ -47,9 +46,8 @@ export const DEPARTMENTS: DepartmentDef[] = [
     descriptionKey: "pillars.lenses.description",
     ctaKey: "pillars.lenses.cta",
     icon: Eye,
-    // No real lens photography yet — reuses the same curated placeholder as
-    // the homepage's Contact Lenses pillar until a real catalog exists.
-    image: editorial.handEyeshadow,
+    // Curated luxury lens campaign image served from Cloudinary.
+    image: "https://res.cloudinary.com/drhwhjav/image/upload/v1791032112/aylamusk/5918004b-a28f-4224-9eb8-f2188a51a80f.webp",
   },
 ];
 

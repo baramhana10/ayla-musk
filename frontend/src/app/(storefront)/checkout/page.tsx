@@ -1,14 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion, AnimatePresence } from "framer-motion";
 import { Banknote } from "lucide-react";
 import { toast } from "sonner";
-import { useCartDetails, useCartStore, COUPONS } from "@/store/cart";
+import { useCartDetails, useCartStore } from "@/store/cart";
+import { useValidatedCoupon } from "@/lib/useValidatedCoupon";
 import { useLastOrderStore } from "@/store/lastOrder";
 import { ordersApi, ApiClientError } from "@/lib/api";
 import { deliverySchema, type DeliveryFormValues } from "@/lib/checkoutSchema";
@@ -38,11 +39,13 @@ export default function CheckoutPage() {
   const [step, setStep] = useState(1);
   const [delivery, setDelivery] = useState<DeliveryFormValues | null>(null);
   const [placing, setPlacing] = useState(false);
+  const placingRef = useRef(false);
   const deliveryForm = useForm<DeliveryFormValues>({ resolver: zodResolver(deliverySchema) });
 
-  const coupon = couponCode ? COUPONS[couponCode] : null;
+  const { coupon, status: couponStatus } = useValidatedCoupon(couponCode);
   const discount = coupon ? Math.round(subtotal * (coupon.percentOff / 100)) : 0;
-  const selectedCity = step === 2 ? delivery?.city : deliveryForm.watch("city");
+  const watchedCity = useWatch({ control: deliveryForm.control, name: "city" });
+  const selectedCity = step === 2 ? delivery?.city : watchedCity;
   const shippingCost = getShippingCost(selectedCity);
   const total = subtotal - discount + (shippingCost ?? 0);
 
@@ -57,7 +60,8 @@ export default function CheckoutPage() {
   }
 
   async function handlePlaceOrder() {
-    if (!delivery) return;
+    if (!delivery || placingRef.current || couponStatus !== "ready") return;
+    placingRef.current = true;
     setPlacing(true);
     try {
       const { order } = await ordersApi.create({
@@ -73,6 +77,7 @@ export default function CheckoutPage() {
     } catch (err) {
       toast.error(err instanceof ApiClientError ? err.message : t("checkout.orderError"));
       setPlacing(false);
+      placingRef.current = false;
     }
   }
 
@@ -151,7 +156,7 @@ export default function CheckoutPage() {
                   {t("checkout.codNotice")}
                 </div>
 
-                <Button size="lg" className="w-full" onClick={handlePlaceOrder} disabled={placing}>
+                <Button size="lg" className="w-full" onClick={handlePlaceOrder} disabled={placing || couponStatus !== "ready"}>
                   {placing ? t("checkout.placingOrder") : `${t("checkout.placeOrderCod")} — ${new Intl.NumberFormat("en-US", { style: "currency", currency: "ILS" }).format(total / 100)}`}
                 </Button>
                 <p className="text-center text-[11px] text-charcoal/40">
@@ -164,6 +169,11 @@ export default function CheckoutPage() {
 
         <OrderSummaryCard lines={lines} subtotal={subtotal} discount={discount} shipping={shippingCost} total={total} />
       </div>
+
+      {couponCode && couponStatus !== "ready" && <div role="alert" className="mt-5 text-sm text-wine">
+        {t(couponStatus === "loading" ? "common.loading" : couponStatus === "invalid" ? "cart.couponInvalid" : "common.requestFailed")}
+        <button type="button" onClick={() => useCartStore.getState().removeCoupon()} className="ms-3 underline">{t("cart.removeCoupon")}</button>
+      </div>}
 
       <div className="mt-10 text-center">
         <Link href="/cart" className="text-xs text-charcoal/40 hover:text-deep-rose">{isArabic ? "→" : "←"} {t("checkout.backToBag")}</Link>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
-import Image from "next/image";
+import Image from "@/components/ui/OptimizedImage";
 import { motion } from "framer-motion";
 import type { Product } from "@/lib/types";
 import { cn } from "@/lib/utils";

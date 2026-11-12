@@ -1,5 +1,7 @@
 export const en = {
   common: {
+    sending: "Sending…",
+    requestFailed: "Unable to complete your request. Please try again.",
     loading: "Loading…",
     currency: "₪",
     home: "Home",
@@ -156,6 +158,12 @@ export const en = {
   },
 
   newsletter: {
+    consent: "By subscribing, you agree to receive Ayla Musk updates. Save your private unsubscribe link after signing up.",
+    manageSubscription: "Save this link to unsubscribe",
+    unsubscribeTitle: "Manage your subscription",
+    unsubscribeAction: "Unsubscribe",
+    unsubscribed: "Your subscription has been stopped.",
+    invalidLink: "Use your private unsubscribe link, or contact us for help.",
     eyebrow: "Join the house list",
     titleA: "Fifteen percent off",
     titleEm: "your first",
@@ -170,7 +178,7 @@ export const en = {
     invalidEmail: "Please enter a valid email address.",
     footerJoin: "Join the list — get 15% off",
     footerPlaceholder: "Your email",
-    footerSubscribed: "Welcome to Ayla Musk — check your inbox for 15% off.",
+    footerSubscribed: "Your subscription request has been saved. Thank you!",
   },
 
   footer: {
@@ -298,6 +306,7 @@ export const en = {
   },
 
   cart: {
+    removeCoupon: "Remove coupon",
     title: "Your Bag",
     emptyTitle: "Your bag is empty",
     emptyBody: "Discover the scent that becomes entirely your own.",
@@ -600,13 +609,14 @@ export const en = {
         primary: "Primary",
         makePrimary: "Make primary",
         uploadFailed: "Image upload failed. Please try again.",
+        uploadTooLarge: "Images must be 10 MB or smaller.",
         uploadNotImage: "not an image file",
         variants: "Variants",
         addVariant: "Add variant",
         variantLabel: "Variant label (optional — overrides size)",
         sizeMl: "Size (ml)",
-        priceCents: "Price (cents)",
-        compareAt: "Compare-at (cents)",
+        priceCents: "Price (₪)",
+        compareAt: "Compare-at (₪)",
         stock: "Stock",
         remove: "Remove",
         featured: "Featured",
@@ -693,6 +703,19 @@ export const en = {
       saveError: "Could not save this coupon.",
       removeError: "Could not remove this coupon.",
     },
+  },
+
+  blackFriday: {
+    marquee: "BLACK FRIDAY",
+    eyebrow: "The Black Edit",
+    arabicLine: "الجمعة السوداء في عالم عايلة مَسك… حيث يتوهّج السواد بالذهب.",
+    headlineA: "Black,",
+    headlineEm: "gilded",
+    headlineB: "in gold.",
+    paragraph: "One weekend a year, the house turns the lights down and the gold up. The full collection, dressed in black.",
+    cta: "Enter the Black Edit",
+    stripNote: "The collection, reimagined in black and gold — for one weekend only.",
+    badge: "Black Friday",
   },
 };
 

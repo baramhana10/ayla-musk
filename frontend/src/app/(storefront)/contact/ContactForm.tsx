@@ -6,20 +6,29 @@ import { toast } from "sonner";
 import { Input, Textarea } from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import { useT } from "@/store/locale";
+import { communicationsApi, ApiClientError } from "@/lib/api";
 
 export default function ContactForm() {
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
   const [sent, setSent] = useState(false);
+  const [sending, setSending] = useState(false);
   const t = useT();
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (sending) return;
     if (!form.name || !form.email.includes("@") || !form.message) {
       toast.error(t("contact.fillFields"));
       return;
     }
-    setSent(true);
-    toast.success(t("contact.receivedBody"));
+    setSending(true);
+    try {
+      await communicationsApi.contact(form);
+      setSent(true);
+      toast.success(t("contact.receivedBody"));
+    } catch (error) {
+      toast.error(error instanceof ApiClientError ? error.message : t("common.requestFailed"));
+    } finally { setSending(false); }
   }
 
   return (
@@ -62,7 +71,7 @@ export default function ContactForm() {
             </div>
             <Input label={t("contact.subject")} value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })} />
             <Textarea label={t("contact.message")} rows={5} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} required />
-            <Button type="submit" size="lg" className="w-full sm:w-auto">{t("contact.send")}</Button>
+            <Button type="submit" size="lg" disabled={sending} className="w-full sm:w-auto">{sending ? t("common.sending") : t("contact.send")}</Button>
           </form>
         )}
       </div>

@@ -1,16 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import { ArrowRight } from "lucide-react";
-import { toast } from "sonner";
+import NewsletterForm from "@/components/forms/NewsletterForm";
 import { InstagramIcon, FacebookIcon, XIcon } from "@/components/ui/SocialIcons";
 import { useT } from "@/store/locale";
 import { DEPARTMENTS, departmentHref } from "@/lib/departments";
 
 export default function Footer() {
   const t = useT();
-  const [email, setEmail] = useState("");
 
   const columns = [
     {
@@ -39,16 +36,6 @@ export default function Footer() {
     },
   ];
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!email.includes("@")) {
-      toast.error(t("newsletter.invalidEmail"));
-      return;
-    }
-    toast.success(t("newsletter.footerSubscribed"));
-    setEmail("");
-  }
-
   return (
     <footer className="mt-24 bg-charcoal text-ivory/90">
       <div className="container-luxe py-16">
@@ -56,25 +43,7 @@ export default function Footer() {
           <div>
             <span className="font-display text-2xl tracking-[0.18em] text-ivory">AYLA MUSK</span>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-ivory/55">{t("footer.tagline")}</p>
-            <form onSubmit={handleSubmit} className="mt-6 max-w-sm">
-              <p className="mb-2 text-xs uppercase tracking-[0.2em] text-champagne">{t("newsletter.footerJoin")}</p>
-              <div className="flex items-center gap-2 rounded-full border border-ivory/20 bg-ivory/5 pe-1.5 ps-4 py-1.5 focus-within:border-champagne transition-colors">
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder={t("newsletter.footerPlaceholder")}
-                  className="flex-1 bg-transparent text-sm text-ivory placeholder:text-ivory/35 outline-none"
-                />
-                <button
-                  type="submit"
-                  aria-label={t("newsletter.subscribe")}
-                  className="flex h-8 w-8 items-center justify-center rounded-full bg-champagne text-charcoal transition-transform hover:scale-105 cursor-pointer shrink-0"
-                >
-                  <ArrowRight size={14} className="rtl:-scale-x-100" />
-                </button>
-              </div>
-            </form>
+            <NewsletterForm />
           </div>
 
           {columns.map((col) => (

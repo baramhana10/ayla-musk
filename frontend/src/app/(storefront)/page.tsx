@@ -1,6 +1,7 @@
 import IntroVeil from "@/components/home/IntroVeil";
 import IntroLoader from "@/components/home/IntroLoader";
 import Hero from "@/components/home/Hero";
+import BlackFridayBanner from "@/components/home/BlackFridayBanner";
 import BrandStrip from "@/components/home/BrandStrip";
 import CollectionPillars from "@/components/home/CollectionPillars";
 import Bestsellers from "@/components/home/Bestsellers";
@@ -13,6 +14,7 @@ export default function HomePage() {
       <IntroVeil />
       <IntroLoader />
       <Hero />
+      <BlackFridayBanner />
       <BrandStrip />
       <CollectionPillars />
       <Bestsellers />

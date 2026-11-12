@@ -41,14 +41,14 @@ export default function AdminShell({ children }: { children: ReactNode }) {
         )}
       </AnimatePresence>
 
-      <div className="flex min-h-screen flex-1 flex-col">
+      <div className="flex min-h-screen min-w-0 flex-1 flex-col">
         <div className="flex items-center gap-3 border-b border-charcoal/10 bg-ivory px-4 py-3 lg:hidden">
-          <button onClick={() => setMobileOpen((o) => !o)} className="text-charcoal cursor-pointer">
+          <button aria-label={mobileOpen ? "Close navigation" : "Open navigation"} aria-expanded={mobileOpen} onClick={() => setMobileOpen((o) => !o)} className="text-charcoal cursor-pointer">
             {mobileOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
           <span className="font-display text-lg">AYLA MUSK Admin</span>
         </div>
-        <div className="flex-1 p-5 sm:p-8">{children}</div>
+        <div className="min-w-0 flex-1 p-5 sm:p-8">{children}</div>
       </div>
       <Toaster position="bottom-center" />
     </div>

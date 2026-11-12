@@ -9,7 +9,14 @@ export async function getUploadsBucket() {
     throw new ApiError(503, "Image storage is not configured on the server.");
   }
 
-  clientPromise ??= new MongoClient(url).connect();
+  if (!clientPromise) {
+    const client = new MongoClient(url, { serverSelectionTimeoutMS: 5000 });
+    clientPromise = client.connect().catch(async error => {
+      clientPromise = undefined;
+      await client.close().catch(() => {});
+      throw error;
+    });
+  }
   const client = await clientPromise;
   return new GridFSBucket(client.db(), { bucketName: "uploads" });
 }

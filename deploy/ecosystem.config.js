@@ -46,6 +46,9 @@ module.exports = {
       env: {
         NODE_ENV: "production",
         PORT: process.env.WEB_PORT || "3000",
+        // next start also evaluates next.config.ts. Keep its image allowlist
+        // on the same API origin used when building the browser bundle.
+        NEXT_PUBLIC_API_URL: process.env.PUBLIC_ORIGIN,
       },
     },
   ],

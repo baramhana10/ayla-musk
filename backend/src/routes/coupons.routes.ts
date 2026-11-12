@@ -20,14 +20,14 @@ router.get(
   "/validate/:code",
   asyncHandler(async (req, res) => {
     const coupon = await prisma.coupon.findUnique({ where: { code: (req.params.code as string).toUpperCase() } });
-    if (!coupon || !coupon.active) return res.json({ valid: false });
+    if (!coupon || !coupon.active || coupon.percentOff < 1 || coupon.percentOff > 100) return res.json({ valid: false });
     res.json({ valid: true, coupon });
   })
 );
 
 const couponSchema = z.object({
-  code: z.string().min(2),
-  label: z.string().min(1),
+  code: z.string().trim().min(2).max(100).transform(value => value.toUpperCase()),
+  label: z.string().trim().min(1).max(200),
   percentOff: z.number().int().min(1).max(100),
   active: z.boolean().default(true),
 });

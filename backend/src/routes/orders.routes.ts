@@ -5,6 +5,7 @@ import { asyncHandler } from "../utils/asyncHandler";
 import { attachUser, requireAdmin } from "../middleware/auth";
 import { badRequest, notFound } from "../utils/ApiError";
 import { DELIVERY_CITIES, getShippingCost } from "../lib/delivery";
+import { withTransactionRetry } from "../lib/transaction";
 
 const router = Router();
 
@@ -47,13 +48,14 @@ function serializeOrder(order: any) {
 }
 
 const createOrderSchema = z.object({
-  items: z.array(z.object({ variantId: z.string(), quantity: z.number().int().min(1) })).min(1),
-  couponCode: z.string().optional(),
+  items: z.array(z.object({ variantId: z.string().min(1).max(100), quantity: z.number().int().min(1).max(1000) })).min(1).max(100)
+    .refine(items => new Set(items.map(item => item.variantId)).size === items.length, "Duplicate variants are not allowed"),
+  couponCode: z.string().trim().max(100).optional(),
   shippingAddress: z.object({
-    fullName: z.string().min(2),
-    phone: z.string().min(7),
+    fullName: z.string().trim().min(2).max(150),
+    phone: z.string().trim().min(7).max(30),
     city: z.enum(DELIVERY_CITIES, { message: "Select a delivery city" }),
-    address: z.string().min(4),
+    address: z.string().trim().min(4).max(1000),
   }),
 });
 
@@ -63,7 +65,8 @@ router.post(
   asyncHandler(async (req, res) => {
     const body = createOrderSchema.parse(req.body);
 
-    const variants = await prisma.productVariant.findMany({
+    const order = await withTransactionRetry(async (tx) => {
+    const variants = await tx.productVariant.findMany({
       where: { id: { in: body.items.map((i) => i.variantId) } },
       include: { product: true },
     });
@@ -84,19 +87,28 @@ router.post(
     let discount = 0;
     let couponCode: string | undefined;
     if (body.couponCode) {
-      const coupon = await prisma.coupon.findUnique({ where: { code: body.couponCode.toUpperCase() } });
-      if (coupon && coupon.active) {
-        discount = Math.round(subtotal * (coupon.percentOff / 100));
-        couponCode = coupon.code;
+      const coupon = await tx.coupon.findUnique({ where: { code: body.couponCode.toUpperCase() } });
+      if (!coupon?.active || coupon.percentOff < 1 || coupon.percentOff > 100) {
+        throw badRequest("This coupon is no longer available. Remove it or choose another coupon.");
       }
+      discount = Math.round(subtotal * (coupon.percentOff / 100));
+      couponCode = coupon.code;
     }
 
     // Prices are stored as agorot: West Bank = 20 NIS; Jerusalem / 1948 areas = 50 NIS.
     const shipping = getShippingCost(body.shippingAddress.city);
     const total = subtotal - discount + shipping;
 
-    const order = await prisma.$transaction(async (tx) => {
-      const created = await tx.order.create({
+      // Reserve stock atomically inside the same transaction as the order.
+      // A competing checkout cannot decrement stock below zero.
+      for (const { variant, quantity } of lineData) {
+        const reserved = await tx.productVariant.updateMany({
+          where: { id: variant.id, stock: { gte: quantity } },
+          data: { stock: { decrement: quantity } },
+        });
+        if (reserved.count !== 1) throw badRequest(`${variant.product.name} is out of stock`);
+      }
+      return tx.order.create({
         data: {
           userId: req.user?.userId,
           subtotal,
@@ -122,11 +134,6 @@ router.post(
         include: { items: { include: { product: true } } },
       });
 
-      for (const { variant, quantity } of lineData) {
-        await tx.productVariant.update({ where: { id: variant.id }, data: { stock: { decrement: quantity } } });
-      }
-
-      return created;
     });
 
     res.status(201).json({ order: serializeOrder(order) });

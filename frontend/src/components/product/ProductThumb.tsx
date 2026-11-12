@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from "@/components/ui/OptimizedImage";
 import PerfumeBottle from "@/components/visuals/PerfumeBottle";
 import { cn } from "@/lib/utils";
 

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none">
+  <title>AYLA MUSK</title>
+  <rect width="64" height="64" rx="14" fill="#17110f"/>
+  <rect x="4.75" y="4.75" width="54.5" height="54.5" rx="10" stroke="#c9a24b" stroke-opacity=".55" stroke-width=".75"/>
+  <g fill="#e4c98a" transform="translate(2.08 4.3) scale(.88)">
+    <!-- Custom serif A: an open counter and a tapered, substantial downstroke. -->
+    <path d="M9 46v-1.5h2.4L22 17h2.2l10.2 27.5H37V46H25v-1.5h3.7l-2.8-7.7H16l-2.8 7.7H17V46H9Zm7.7-11.2h8.5L21 23l-4.3 11.8Z"/>
+    <!-- M shares the A's baseline, with generous counters at favicon sizes. -->
+    <path d="M31 46v-1.5h3V21h-3v-1.5h8l7.1 18.7 7-18.7H59V21h-2.8v23.5H59V46H48v-1.5h3.2V25.1L43.4 46h-1.2l-6.5-17.3v15.8H39V46h-8Z"/>
+  </g>
+</svg>

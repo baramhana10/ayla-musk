@@ -70,5 +70,6 @@ pm2 save
 echo "==> Health check"
 sleep 2
 curl -fsS "http://127.0.0.1:${API_PORT:-4000}/health" && echo
+curl -fsS "http://127.0.0.1:${API_PORT:-4000}/health/ready" && echo
 curl -fsS -o /dev/null -w "web: HTTP %{http_code}\n" "http://127.0.0.1:${WEB_PORT:-3000}/"
 echo "==> Done."

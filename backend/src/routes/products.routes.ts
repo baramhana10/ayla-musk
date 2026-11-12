@@ -169,6 +169,8 @@ router.post(
         waterContent: body.waterContent,
         prescriptionAvailable: body.prescriptionAvailable ?? false,
         imagesJson: JSON.stringify(body.images ?? []),
+        rating: 0,
+        reviewCount: 0,
         featured: body.featured ?? false,
         bestseller: body.bestseller ?? false,
         isNew: body.isNew ?? false,

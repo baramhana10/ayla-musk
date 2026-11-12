@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
+import Image from "@/components/ui/OptimizedImage";
 import { motion } from "framer-motion";
 import { Heart, Plus } from "lucide-react";
 import { toast } from "sonner";
@@ -96,6 +96,9 @@ export default function ProductCard({ product, index = 0 }: { product: Product; 
           </span>
 
           <div className="absolute end-4 top-4 z-10 flex flex-col items-end gap-1.5">
+            <span className="border border-champagne/60 bg-noir/80 px-2.5 py-1 text-[8.5px] uppercase tracking-[0.18em] text-champagne-light backdrop-blur">
+              {t("blackFriday.badge")}
+            </span>
             {product.bestseller && (
               <span className="bg-noir/70 px-2.5 py-1 text-[8.5px] uppercase tracking-[0.18em] text-champagne-light backdrop-blur">
                 {t("product.bestseller")}

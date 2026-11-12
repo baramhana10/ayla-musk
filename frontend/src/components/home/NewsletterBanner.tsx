@@ -1,10 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import { motion } from "framer-motion";
-import { toast } from "sonner";
-import { ArrowRight } from "lucide-react";
 import { useT } from "@/store/locale";
+import NewsletterForm from "@/components/forms/NewsletterForm";
 
 const easeLuxe = [0.22, 1, 0.36, 1] as const;
 
@@ -15,18 +13,6 @@ const easeLuxe = [0.22, 1, 0.36, 1] as const;
  */
 export default function NewsletterBanner() {
   const t = useT();
-  const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
-
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!email.includes("@")) {
-      toast.error(t("newsletter.invalidEmail"));
-      return;
-    }
-    setSubmitted(true);
-    toast.success(t("newsletter.footerSubscribed"));
-  }
 
   return (
     <section className="grain-warm relative isolate overflow-hidden bg-[var(--hw-espresso)] py-24 text-[var(--hw-cream)] sm:py-32">
@@ -57,35 +43,7 @@ export default function NewsletterBanner() {
           {t("newsletter.paragraph")}
         </p>
 
-        {submitted ? (
-          <motion.p
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: easeLuxe }}
-            className="mx-auto mt-12 max-w-md border-t border-[var(--hw-tan)]/30 pt-6 text-[14px] text-[var(--hw-tan-light)]"
-          >
-            {t("newsletter.thanks")} <span className="font-display tracking-[0.2em]">AYLA15</span> {t("newsletter.thanksEnd")} {email}.
-          </motion.p>
-        ) : (
-          <form onSubmit={handleSubmit} className="group mx-auto mt-12 flex max-w-md items-center gap-4 border-b border-[var(--hw-cream)]/25 pb-3 transition-colors duration-500 focus-within:border-[var(--hw-tan)]">
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder={t("newsletter.placeholder")}
-              aria-label={t("newsletter.emailLabel")}
-              className="h-10 flex-1 bg-transparent text-[15px] text-[var(--hw-cream)] outline-none placeholder:text-[var(--hw-cream)]/30"
-            />
-            <button
-              type="submit"
-              className="flex cursor-pointer items-center gap-2.5 text-[11px] uppercase tracking-[0.2em] text-[var(--hw-tan-light)] transition-colors hover:text-[var(--hw-cream)]"
-            >
-              {t("newsletter.subscribe")}
-              <ArrowRight size={14} className="transition-transform duration-500 group-focus-within:translate-x-1 rtl:group-focus-within:-translate-x-1 rtl:-scale-x-100" />
-            </button>
-          </form>
-        )}
+        <div className="mx-auto mt-12 max-w-sm text-start"><NewsletterForm /></div>
 
         <p className="mt-6 text-[10px] uppercase tracking-[0.24em] text-[var(--hw-cream)]/30">
           {t("newsletter.unsubscribe")}

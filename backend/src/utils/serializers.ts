@@ -13,7 +13,12 @@ function safeParseArray(json: string | null | undefined): string[] {
 }
 
 export function serializeProduct(product: ProductWithRelations) {
-  const hasNotes = Boolean(product.notesTop || product.notesHeart || product.notesBase) && product.department === "perfumes";
+  const notes = {
+    top: safeParseArray(product.notesTop),
+    heart: safeParseArray(product.notesHeart),
+    base: safeParseArray(product.notesBase),
+  };
+  const hasNotes = product.department === "perfumes" && Object.values(notes).some(values => values.length > 0);
   const benefits = safeParseArray(product.benefits);
   const ingredients = safeParseArray(product.ingredients);
 
@@ -30,13 +35,7 @@ export function serializeProduct(product: ProductWithRelations) {
 
     scentFamily: product.scentFamily ?? undefined,
     gender: product.gender ?? undefined,
-    notes: hasNotes
-      ? {
-          top: safeParseArray(product.notesTop),
-          heart: safeParseArray(product.notesHeart),
-          base: safeParseArray(product.notesBase),
-        }
-      : undefined,
+    notes: hasNotes ? notes : undefined,
 
     benefits: benefits.length ? benefits : undefined,
     ingredients: ingredients.length ? ingredients : undefined,

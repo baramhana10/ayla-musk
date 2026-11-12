@@ -1,4 +1,4 @@
-import { InputHTMLAttributes, TextareaHTMLAttributes, forwardRef } from "react";
+import { InputHTMLAttributes, TextareaHTMLAttributes, forwardRef, useId } from "react";
 import { cn } from "@/lib/utils";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
@@ -7,16 +7,22 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ className, label, error, id, ...props }, ref) => (
+  ({ className, label, error, id, ...props }, ref) => {
+    const generatedId = useId();
+    const inputId = id ?? generatedId;
+    const errorId = `${inputId}-error`;
+    return (
     <div className="w-full">
       {label && (
-        <label htmlFor={id} className="mb-1.5 block text-xs font-medium tracking-wide text-charcoal/70">
+        <label htmlFor={inputId} className="mb-1.5 block text-xs font-medium tracking-wide text-charcoal/70">
           {label}
         </label>
       )}
       <input
         ref={ref}
-        id={id}
+        id={inputId}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={error ? errorId : props["aria-describedby"]}
         className={cn(
           "w-full rounded-lg border border-charcoal/15 bg-ivory px-4 py-3 text-sm text-charcoal placeholder:text-charcoal/35 outline-none transition-colors focus:border-deep-rose focus:ring-1 focus:ring-deep-rose/40",
           error && "border-wine focus:border-wine focus:ring-wine/30",
@@ -24,9 +30,9 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         )}
         {...props}
       />
-      {error && <p className="mt-1 text-xs text-wine">{error}</p>}
+      {error && <p id={errorId} role="alert" className="mt-1 text-xs text-wine">{error}</p>}
     </div>
-  )
+  ); }
 );
 Input.displayName = "Input";
 
@@ -36,16 +42,22 @@ interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
 }
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ className, label, error, id, ...props }, ref) => (
+  ({ className, label, error, id, ...props }, ref) => {
+    const generatedId = useId();
+    const inputId = id ?? generatedId;
+    const errorId = `${inputId}-error`;
+    return (
     <div className="w-full">
       {label && (
-        <label htmlFor={id} className="mb-1.5 block text-xs font-medium tracking-wide text-charcoal/70">
+        <label htmlFor={inputId} className="mb-1.5 block text-xs font-medium tracking-wide text-charcoal/70">
           {label}
         </label>
       )}
       <textarea
         ref={ref}
-        id={id}
+        id={inputId}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={error ? errorId : props["aria-describedby"]}
         className={cn(
           "w-full rounded-lg border border-charcoal/15 bg-ivory px-4 py-3 text-sm text-charcoal placeholder:text-charcoal/35 outline-none transition-colors focus:border-deep-rose focus:ring-1 focus:ring-deep-rose/40",
           error && "border-wine focus:border-wine focus:ring-wine/30",
@@ -53,8 +65,8 @@ export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         )}
         {...props}
       />
-      {error && <p className="mt-1 text-xs text-wine">{error}</p>}
+      {error && <p id={errorId} role="alert" className="mt-1 text-xs text-wine">{error}</p>}
     </div>
-  )
+  ); }
 );
 Textarea.displayName = "Textarea";

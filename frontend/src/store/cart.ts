@@ -103,8 +103,3 @@ export function useCartDetails() {
   const count = resolved.reduce((sum, l) => sum + l.quantity, 0);
   return { lines: resolved, subtotal, count };
 }
-
-export const COUPONS: Record<string, { label: string; percentOff: number }> = {
-  AYLA10: { label: "10% off your order", percentOff: 10 },
-  WELCOME15: { label: "15% off for new clients", percentOff: 15 },
-};

@@ -212,3 +212,22 @@ model Coupon {
   percentOff Int
   active     Boolean @default(true)
 }
+
+model ContactMessage {
+  id        String   @id @default(cuid()) @map("_id")
+  name      String
+  email     String
+  subject   String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model NewsletterSubscriber {
+  email            String   @id @map("_id")
+  active           Boolean  @default(true)
+  unsubscribeToken String   @unique
+  createdAt        DateTime @default(now())
+}

@@ -12,6 +12,8 @@
     "seed": "ts-node prisma/seed.ts",
     "migrate:sqlite-to-mongo": "ts-node scripts/migrate-sqlite-to-mongodb.ts",
     "admin:upsert": "ts-node scripts/upsert-admin.ts",
+    "catalog:prepare": "node scripts/prepare-ayla-catalog.cjs",
+    "catalog:upload": "ts-node scripts/upload-ayla-catalog.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

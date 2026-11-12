@@ -2,6 +2,8 @@ import type { Dictionary } from "./en";
 
 export const ar: Dictionary = {
   common: {
+    sending: "جارٍ الإرسال…",
+    requestFailed: "تعذّر إكمال الطلب. يرجى المحاولة مجددًا.",
     loading: "جارٍ التحميل…",
     currency: "₪",
     home: "الرئيسية",
@@ -158,6 +160,12 @@ export const ar: Dictionary = {
   },
 
   newsletter: {
+    consent: "بالاشتراك، توافقين على تلقي أخبار أيلا مَسك. احتفظي برابط إلغاء الاشتراك الخاص بكِ بعد التسجيل.",
+    manageSubscription: "احتفظي بهذا الرابط لإلغاء الاشتراك",
+    unsubscribeTitle: "إدارة اشتراككِ",
+    unsubscribeAction: "إلغاء الاشتراك",
+    unsubscribed: "تم إيقاف اشتراككِ بنجاح.",
+    invalidLink: "استخدمي رابط إلغاء الاشتراك الخاص بكِ، أو تواصلي معنا للمساعدة.",
     eyebrow: "انضمي إلى قائمة الدار",
     titleA: "خصم خمسة عشر بالمئة على",
     titleEm: "طلبك الأول",
@@ -172,7 +180,7 @@ export const ar: Dictionary = {
     invalidEmail: "يرجى إدخال بريد إلكتروني صحيح.",
     footerJoin: "انضمي للقائمة — احصلي على خصم 15%",
     footerPlaceholder: "بريدك الإلكتروني",
-    footerSubscribed: "أهلًا بكِ في أيلا مَسك — تفقّدي بريدك للحصول على خصم 15%.",
+    footerSubscribed: "تم حفظ طلب اشتراككِ بنجاح. شكرًا لكِ!",
   },
 
   footer: {
@@ -300,6 +308,7 @@ export const ar: Dictionary = {
   },
 
   cart: {
+    removeCoupon: "إزالة رمز الخصم",
     title: "سلتك",
     emptyTitle: "سلتك فارغة",
     emptyBody: "اكتشفي العطر الذي يصبح توقيعك الخاص تمامًا.",
@@ -602,13 +611,14 @@ export const ar: Dictionary = {
         primary: "رئيسية",
         makePrimary: "اجعلها الرئيسية",
         uploadFailed: "فشل رفع الصورة. حاول مرة أخرى.",
+        uploadTooLarge: "يجب ألا يتجاوز حجم الصورة 10 ميغابايت.",
         uploadNotImage: "ليست ملف صورة",
         variants: "الأحجام",
         addVariant: "إضافة حجم",
         variantLabel: "تسمية الحجم (اختياري — تحل محل الحجم بالمل)",
         sizeMl: "الحجم (مل)",
-        priceCents: "السعر (بالسنت)",
-        compareAt: "السعر قبل الخصم (بالسنت)",
+        priceCents: "السعر (₪)",
+        compareAt: "السعر قبل الخصم (₪)",
         stock: "المخزون",
         remove: "إزالة",
         featured: "مميز",
@@ -695,5 +705,18 @@ export const ar: Dictionary = {
       saveError: "تعذّر حفظ كود الخصم هذا.",
       removeError: "تعذّر إزالة كود الخصم هذا.",
     },
+  },
+
+  blackFriday: {
+    marquee: "الجمعة السوداء",
+    eyebrow: "الإصدار الأسود",
+    arabicLine: "الجمعة السوداء في عالم عايلة مَسك… حيث يتوهّج السواد بالذهب.",
+    headlineA: "سواد",
+    headlineEm: "مذهَّب",
+    headlineB: "بالذهب.",
+    paragraph: "في عطلة نهاية أسبوع واحدة كل عام، تُخفت الدار أنوارها وتُشعل الذهب. المجموعة كاملة، بثوب أسود.",
+    cta: "اكتشفي الإصدار الأسود",
+    stripNote: "المجموعة بالكامل، بحُلّة سوداء وذهبية — لعطلة نهاية أسبوع واحدة فقط.",
+    badge: "الجمعة السوداء",
   },
 };

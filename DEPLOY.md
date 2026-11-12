@@ -90,3 +90,33 @@ bash /var/www/aylamusk/deploy/deploy.sh
 
 Back up the database using Atlas backups/snapshots, rather than copying a
 database file from the VPS. Keep `/etc/aylamusk.env` readable only by root.
+
+## Uploaded photos return an image-optimizer error
+
+If `/api/uploads/...` returns the photo but `/_next/image?...` returns
+`"url" parameter is not allowed`, check the web process's API origin.
+`next start` evaluates `next.config.ts` at runtime. `NEXT_PUBLIC_API_URL`
+must be present in the running web process as well as during `next build`;
+otherwise the upload-image allowlist falls back to localhost.
+
+The web entry in `deploy/ecosystem.config.js` now passes this value from
+`PUBLIC_ORIGIN`. For a running installation, repair its environment without
+rebuilding, migrating, or changing product data:
+
+```bash
+set -a
+. /etc/aylamusk.env
+set +a
+NEXT_PUBLIC_API_URL="$PUBLIC_ORIGIN" pm2 restart aylamusk-web --update-env
+pm2 save
+```
+
+Alternatively, after copying the repair script to the VPS:
+
+```bash
+bash /var/www/aylamusk/deploy/fix-image-origin.sh
+```
+
+The script restarts only the web process and verifies an uploaded photo through
+the actual image-optimizer endpoint used by the storefront. Original image
+uploads and direct download checks alone do not prove storefront rendering.

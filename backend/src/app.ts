@@ -19,6 +19,9 @@ import couponRoutes from "./routes/coupons.routes";
 import adminRoutes from "./routes/admin.routes";
 import analyticsRoutes from "./routes/analytics.routes";
 import uploadRoutes from "./routes/uploads.routes";
+import communicationsRoutes from "./routes/communications.routes";
+import { prisma } from "./lib/prisma";
+import { asyncHandler } from "./utils/asyncHandler";
 
 const app = express();
 
@@ -40,6 +43,15 @@ app.use("/api", apiLimiter);
 app.use(attachUser);
 
 app.get("/health", (_req, res) => res.json({ status: "ok" }));
+// Liveness is independent of MongoDB; readiness verifies database access.
+app.get("/health/ready", asyncHandler(async (_req, res) => {
+  try {
+    await prisma.$runCommandRaw({ ping: 1 });
+    res.json({ status: "ok", database: "connected" });
+  } catch {
+    res.status(503).json({ status: "unavailable", database: "unavailable" });
+  }
+}));
 
 app.use("/api/auth", authRoutes);
 app.use("/api/products", productRoutes);
@@ -52,6 +64,7 @@ app.use("/api/coupons", couponRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/uploads", uploadRoutes);
+app.use("/api", communicationsRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

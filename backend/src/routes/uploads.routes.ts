@@ -4,11 +4,16 @@ import { getUploadsBucket } from "../lib/uploads";
 import { requireAdmin } from "../middleware/auth";
 import { badRequest, notFound } from "../utils/ApiError";
 import { asyncHandler } from "../utils/asyncHandler";
+import { createCloudinaryUpload, uploadToCloudinary } from "../lib/cloudinary";
 
 const router = Router();
 
-// Product and category image bytes are stored in MongoDB GridFS. Product
-// documents retain only the public URL returned by this route.
+// New images are stored in Cloudinary. The old GridFS GET route remains
+// available for historical order images and links during migration.
+router.post("/signature", requireAdmin, asyncHandler(async (_req, res) => {
+  res.setHeader("Cache-Control", "no-store");
+  res.json(createCloudinaryUpload());
+}));
 router.post(
   "/",
   requireAdmin,
@@ -19,18 +24,12 @@ router.post(
       throw badRequest("Upload a valid image file.");
     }
 
-    const rawName = req.header("x-file-name") || "image";
-    const filename = rawName.replace(/[^a-zA-Z0-9._-]/g, "-").slice(0, 160) || "image";
-    const bucket = await getUploadsBucket();
-    const stream = bucket.openUploadStream(filename, { metadata: { contentType } });
-
-    await new Promise<void>((resolve, reject) => {
-      stream.once("error", reject);
-      stream.once("finish", resolve);
-      stream.end(req.body);
-    });
-
-    res.status(201).json({ url: `${req.protocol}://${req.get("host")}/api/uploads/${stream.id.toString()}` });
+    let rawName: string;
+    try { rawName = decodeURIComponent(req.header("x-file-name") || "image"); }
+    catch { throw badRequest("Invalid image filename."); }
+    const filename = rawName.normalize("NFC").replace(/[/\\\x00-\x1f\x7f]/g, "-").slice(0, 160) || "image";
+    const url = await uploadToCloudinary(req.body, contentType, filename);
+    res.status(201).json({ url });
   })
 );
 

@@ -4,7 +4,9 @@ import Link from "next/link";
 import { ShoppingBag, X, Tag } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
-import { useCartDetails, useCartStore, COUPONS } from "@/store/cart";
+import { useCartDetails, useCartStore } from "@/store/cart";
+import { couponsApi, ApiClientError } from "@/lib/api";
+import { useValidatedCoupon } from "@/lib/useValidatedCoupon";
 import { formatPrice, cn, variantLabel } from "@/lib/utils";
 import ProductThumb from "@/components/product/ProductThumb";
 import QuantityStepper from "@/components/ui/QuantityStepper";
@@ -25,23 +27,28 @@ export default function CartPage() {
   const applyCoupon = useCartStore((s) => s.applyCoupon);
   const removeCoupon = useCartStore((s) => s.removeCoupon);
   const [couponInput, setCouponInput] = useState("");
+  const [applying, setApplying] = useState(false);
   const mounted = useHasMounted();
 
-  const coupon = couponCode ? COUPONS[couponCode] : null;
+  const { coupon, status: couponStatus } = useValidatedCoupon(couponCode);
   const discount = coupon ? Math.round(subtotal * (coupon.percentOff / 100)) : 0;
   // Delivery price is calculated from the selected city at checkout.
   const total = subtotal - discount;
 
-  function handleApplyCoupon(e: React.FormEvent) {
+  async function handleApplyCoupon(e: React.FormEvent) {
     e.preventDefault();
+    if (applying) return;
     const code = couponInput.trim().toUpperCase();
-    if (COUPONS[code]) {
-      applyCoupon(code);
-      toast.success(`${COUPONS[code].label} ${t("cart.couponApplied")}`);
+    if (!code) return;
+    setApplying(true);
+    try {
+      const result = await couponsApi.validate(code);
+      if (!result.valid || !result.coupon) { toast.error(t("cart.couponInvalid")); return; }
+      applyCoupon(result.coupon.code);
+      toast.success(`${result.coupon.label} ${t("cart.couponApplied")}`);
       setCouponInput("");
-    } else {
-      toast.error(t("cart.couponInvalid"));
-    }
+    } catch (error) { toast.error(error instanceof ApiClientError ? error.message : t("common.requestFailed")); }
+    finally { setApplying(false); }
   }
 
   if (!mounted) return <div className="container-luxe py-24" />;
@@ -103,10 +110,10 @@ export default function CartPage() {
           <h2 className="font-display text-xl text-charcoal">{t("cart.orderSummary")}</h2>
 
           <form onSubmit={handleApplyCoupon} className="mt-5">
-            {coupon ? (
+            {couponCode ? (
               <div className="flex items-center justify-between rounded-full bg-ivory px-4 py-2.5 text-sm">
                 <span className="flex items-center gap-2 text-deep-rose"><Tag size={13} /> {couponCode} {t("cart.couponApplied")}</span>
-                <button type="button" onClick={removeCoupon} className="text-charcoal/40 hover:text-wine cursor-pointer"><X size={14} /></button>
+                <button type="button" onClick={removeCoupon} aria-label={t("cart.removeCoupon")} className="text-charcoal/40 hover:text-wine cursor-pointer"><X size={14} /></button>
               </div>
             ) : (
               <div className="flex gap-2">
@@ -114,12 +121,14 @@ export default function CartPage() {
                   value={couponInput}
                   onChange={(e) => setCouponInput(e.target.value)}
                   placeholder={t("cart.couponPlaceholder")}
-                  className="h-11 flex-1 rounded-full border border-charcoal/15 bg-ivory px-4 text-sm outline-none focus:border-deep-rose"
+                  aria-label={t("cart.couponPlaceholder")}
+                  className="h-11 min-w-0 flex-1 rounded-full border border-charcoal/15 bg-ivory px-4 text-sm outline-none focus:border-deep-rose"
                 />
-                <Button type="submit" variant="outline" size="md">{t("cart.couponApply")}</Button>
+                <Button type="submit" disabled={applying} variant="outline" size="md">{applying ? t("common.loading") : t("cart.couponApply")}</Button>
               </div>
             )}
-            <p className="mt-2 text-[11px] text-charcoal/40">{t("cart.couponTry")}</p>
+            {couponStatus === "loading" && <p role="status" className="mt-2 text-xs">{t("common.loading")}</p>}
+            {(couponStatus === "invalid" || couponStatus === "error") && <p role="alert" className="mt-2 text-xs text-wine">{t(couponStatus === "invalid" ? "cart.couponInvalid" : "common.requestFailed")}</p>}
           </form>
 
           <div className="mt-6 space-y-3 border-t border-charcoal/10 pt-5 text-sm">
